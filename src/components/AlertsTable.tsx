@@ -195,7 +195,7 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                                                 </div>
                                             </TableCell>
                                             <TableCell className="pr-6 py-4">
-                                                <div className="flex flex-col items-end gap-3">
+                                                <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-3">
                                                     {viewMode === "vencimientos" ? (
                                                         <div
                                                             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${getDaysColor(days)}`}
