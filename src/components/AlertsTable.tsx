@@ -161,10 +161,10 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                         <Table>
                             <TableHeader>
                                 <TableRow className="hover:bg-transparent">
-                                    <TableHead className="pl-6 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                                    <TableHead className="pl-6 text-xs font-semibold uppercase tracking-wider text-zinc-500 w-[60%] sm:w-[70%]">
                                         Detalle de Póliza
                                     </TableHead>
-                                    <TableHead className="pr-6 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                                    <TableHead className="pr-6 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500">
                                         Vencimiento y Acción
                                     </TableHead>
                                 </TableRow>
@@ -180,8 +180,8 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                                             key={poliza.CODIGO}
                                             className="group transition-colors hover:bg-zinc-50/50"
                                         >
-                                            <TableCell className="pl-6 py-4">
-                                                <div className="flex flex-col gap-1.5">
+                                            <TableCell className="pl-6 py-4 align-top">
+                                                <div className="flex flex-col gap-1.5 pt-1">
                                                     <p className="text-sm font-semibold text-zinc-900">
                                                         {poliza.ASEGURADO}
                                                     </p>
@@ -194,8 +194,8 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                                                     </div>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="pr-6 py-4">
-                                                <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-3">
+                                            <TableCell className="pr-6 py-4 align-top">
+                                                <div className="flex flex-col items-start gap-2.5">
                                                     {viewMode === "vencimientos" ? (
                                                         <div
                                                             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${getDaysColor(days)}`}
