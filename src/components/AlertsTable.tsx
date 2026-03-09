@@ -161,10 +161,10 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                         <Table>
                             <TableHeader>
                                 <TableRow className="hover:bg-transparent">
-                                    <TableHead className="pl-6 text-xs font-semibold uppercase tracking-wider text-zinc-500 w-[60%] sm:w-[70%]">
+                                    <TableHead className="pl-6 text-xs font-semibold uppercase tracking-wider text-zinc-500 w-full min-w-[280px]">
                                         Detalle de Póliza
                                     </TableHead>
-                                    <TableHead className="pr-6 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                                    <TableHead className="pr-6 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap min-w-[160px]">
                                         Vencimiento y Acción
                                     </TableHead>
                                 </TableRow>
@@ -194,7 +194,7 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                                                     </div>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="pr-6 py-4 align-top">
+                                            <TableCell className="pr-6 py-4 align-top whitespace-nowrap">
                                                 <div className="flex flex-col items-end gap-2">
                                                     {viewMode === "vencimientos" ? (
                                                         <div
