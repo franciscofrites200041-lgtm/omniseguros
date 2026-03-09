@@ -1,18 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Activity, Wifi, LayoutDashboard, ClipboardList, BarChart2, Menu, Plus, UserCog, UploadCloud } from "lucide-react";
+import { Activity, Wifi, LayoutDashboard, ClipboardList, BarChart2, Menu, Plus, UserCog, UploadCloud, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MetricsModal } from "@/components/MetricsModal";
 import { NewPolizaModal } from "@/components/NewPolizaModal";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { createClient } from "@/utils/supabase/client";
 
 export function Header() {
     const pathname = usePathname();
+    const router = useRouter();
     const [isNewPolizaOpen, setIsNewPolizaOpen] = useState(false);
+
+    const handleLogout = async () => {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+        router.push("/login");
+        router.refresh();
+    };
 
     const today = new Date().toLocaleDateString("es-AR", {
         weekday: "long",
@@ -80,6 +89,17 @@ export function Header() {
                                         <UserCog className="h-5 w-5 text-zinc-500" />
                                         <span className="text-sm font-semibold">Modificar Cliente</span>
                                     </Button>
+
+                                    <div className="border-t border-zinc-100 mt-4 pt-4">
+                                        <Button
+                                            variant="ghost"
+                                            className="w-full justify-start gap-4 h-12 hover:bg-red-50 text-red-600"
+                                            onClick={handleLogout}
+                                        >
+                                            <LogOut className="h-5 w-5" />
+                                            <span className="text-sm font-semibold">Cerrar Sesión</span>
+                                        </Button>
+                                    </div>
                                 </nav>
                             </SheetContent>
                         </Sheet>
@@ -92,11 +112,20 @@ export function Header() {
 
                     </div>
 
-                    {/* Right: Date */}
-                    <div className="flex items-center gap-5">
+                    {/* Right: Date + Logout */}
+                    <div className="flex items-center gap-4">
                         <span className="hidden text-sm font-medium text-zinc-500 lg:block">
                             {today.charAt(0).toUpperCase() + today.slice(1)}
                         </span>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleLogout}
+                            className="gap-2 text-zinc-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                            <LogOut className="h-4 w-4" />
+                            <span className="hidden sm:inline text-sm">Salir</span>
+                        </Button>
                     </div>
                 </div>
             </header>

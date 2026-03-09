@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserPlus, User, Lock, EyeOff, Eye, ArrowRight, ChevronDown, Activity, AlertCircle } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -13,26 +14,30 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         setIsLoading(true);
 
-        // Simulated authentication
-        setTimeout(() => {
-            if (email.toLowerCase() === "asesor@omniseguros.com" && password === "admin123") {
-                router.push("/");
-            } else {
-                setError("Credenciales incorrectas. (Prueba: asesor@omniseguros.com / admin123)");
-                setIsLoading(false);
-            }
-        }, 800);
+        const supabase = createClient();
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) {
+            setError("Credenciales incorrectas. Por favor, verifica tu correo y contraseña.");
+            setIsLoading(false);
+        } else {
+            router.push("/");
+            router.refresh();
+        }
     };
 
     return (
-        <div className="min-h-screen bg-zinc-200/50 flex items-center justify-center p-4 sm:p-8 font-sans selection:bg-blue-100">
-            {/* Main Application Window (mimicking the reference framing) */}
-            <div className="w-full max-w-[1280px] h-[800px] min-h-[600px] bg-white rounded-3xl shadow-2xl flex overflow-hidden border border-zinc-200">
+        <div className="min-h-screen bg-zinc-200/50 flex items-center justify-center p-0 sm:p-8 font-sans selection:bg-blue-100">
+            {/* Main Application Window */}
+            <div className="w-full sm:max-w-[1280px] min-h-screen sm:min-h-0 sm:h-[min(800px,90vh)] bg-white sm:rounded-3xl shadow-2xl flex overflow-hidden sm:border border-zinc-200">
 
                 {/* Left Panel: Immersive Dark Mode (45-50% width) */}
                 <div className="hidden lg:flex w-1/2 bg-[#1A1918] text-zinc-100 flex-col relative overflow-hidden">
@@ -78,12 +83,7 @@ export default function LoginPage() {
                         </p>
                     </div>
 
-                    {/* Bottom Indicator */}
-                    <div className="absolute bottom-10 inset-x-0 flex justify-center z-20">
-                        <div className="w-8 h-8 rounded-full border border-orange-500/50 flex items-center justify-center">
-                            <Activity className="h-4 w-4 text-orange-500" />
-                        </div>
-                    </div>
+
 
                 </div>
 
@@ -91,15 +91,11 @@ export default function LoginPage() {
                 <div className="w-full lg:w-1/2 bg-white flex flex-col relative rounded-r-3xl">
 
                     {/* Top Right Header */}
-                    <div className="absolute top-0 left-0 right-0 p-8 sm:p-12 pl-12 sm:pl-16 flex items-center justify-between z-10">
+                    <div className="absolute top-0 left-0 right-0 p-8 sm:p-12 pl-12 sm:pl-16 flex items-center z-10">
                         <div className="flex items-center gap-3">
                             <div className="w-6 h-6 border-2 border-blue-600 border-t-orange-400 border-r-rose-400 rounded-full" />
                             <span className="text-xl font-bold text-zinc-900 tracking-tight">OmniSeguros</span>
                         </div>
-                        <button className="flex items-center gap-2 text-[14px] text-zinc-600 hover:text-zinc-900 font-medium transition-colors">
-                            <UserPlus className="w-4 h-4" strokeWidth={1.5} />
-                            Crear cuenta
-                        </button>
                     </div>
 
                     {/* Center Form Container */}

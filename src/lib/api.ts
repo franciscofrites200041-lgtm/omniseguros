@@ -1,6 +1,7 @@
 import { Poliza } from "./types";
 import { mockPolizas } from "./mock-data";
 import { parseCost } from "./utils";
+import { createClient } from "@/utils/supabase/client";
 
 const GET_DATA_URL = process.env.NEXT_PUBLIC_N8N_GET_DATA_WEBHOOK;
 const NOTIFY_URL = process.env.NEXT_PUBLIC_N8N_NOTIFY_WEBHOOK;
@@ -8,39 +9,57 @@ const AGENT_URL = process.env.NEXT_PUBLIC_N8N_AGENT_WEBHOOK;
 const UPDATE_URL = process.env.NEXT_PUBLIC_N8N_UPDATE_WEBHOOK;
 const CREATE_URL = process.env.NEXT_PUBLIC_N8N_CREATE_WEBHOOK;
 
-const USE_MOCK = !GET_DATA_URL || GET_DATA_URL.includes("tu-instancia");
+const USE_MOCK = !process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 /**
- * Normalize a raw row from n8n/Google Sheets into a clean Poliza object.
- * Handles field name mismatches (col_1 → ESTADO, COSTO MENSUAL → COSTO_MENSUAL),
- * whitespace/newline cleanup, and cost parsing.
+ * Mapeo de columnas a la base de datos local / Excel super robusto (ignora mayúsculas, tildes y espacios)
  */
-function normalizePoliza(raw: Record<string, unknown>): Poliza {
+export function normalizePoliza(raw: Record<string, unknown>): Poliza {
+    // Normalizar las claves del objeto entrante para que no importen las mayúsculas ni los espacios
+    const normalizedRaw: Record<string, unknown> = {};
+    for (const key in raw) {
+        if (Object.prototype.hasOwnProperty.call(raw, key)) {
+            const trimmedKey = key.trim();
+            // Quitamos tildes para la clave y pasamos a minúscula
+            const cleanKey = trimmedKey.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            normalizedRaw[cleanKey] = raw[key];
+
+            // Si la clave está vacía o es genérica (Columna_1, Col_0), intentar detectar qué campo es
+            // mirando el valor. Si parece un estado (VIGENTE, IMPAGA, etc.), asignarlo como 'estado'
+            if (cleanKey === "" || cleanKey.startsWith("columna_") || cleanKey.startsWith("col_")) {
+                const val = String(raw[key] || "").trim().toUpperCase();
+                if (["VIGENTE", "IMPAGA", "A RENOVAR", "ANULADO", "OBSERVACION", "ANULADA", "VENCIDA"].includes(val)) {
+                    normalizedRaw["estado"] = raw[key];
+                }
+            }
+        }
+    }
+
+    // Buscar el valor en las distintas posibles variaciones de nombre de columna normalizadas
+    const getValue = (keys: string[]) => {
+        for (const k of keys) {
+            if (normalizedRaw[k] !== undefined && normalizedRaw[k] !== null && normalizedRaw[k] !== "") {
+                return normalizedRaw[k];
+            }
+        }
+        return "";
+    };
+
     return {
-        ESTADO: String(raw.ESTADO || raw.col_1 || "")
+        ESTADO: String(getValue(["estado", "est", "status", "col_1"]))
             .trim()
-            .replace(/[\n\t]/g, "")
             .toUpperCase(),
-        TELEFONO: String(raw.TELEFONO || "")
-            .trim()
-            .replace(/[\n\t]/g, ""),
-        CODIGO: String(raw.CODIGO || "").trim(),
-        FECHA: String(raw.FECHA || "").trim(),
-        ASEGURADO: String(raw.ASEGURADO || "")
-            .trim()
-            .replace(/[\n\t:]/g, "")
-            .replace(/\s+/g, " "),
-        COMPAÑIA: String(raw["COMPAÑIA"] || raw["COMPANIA"] || "")
-            .trim()
-            .replace(/[\n\t]/g, ""),
-        POLIZA: String(raw.POLIZA || "")
-            .trim()
-            .replace(/[\n\t|]/g, ""),
-        COBERTURA: String(raw.COBERTURA || "").trim(),
-        VENCIMIENTO: String(raw.VENCIMIENTO || "").trim(),
-        REFERENCIAS: String(raw.REFERENCIAS || "").trim(),
-        COSTO_MENSUAL: parseCost(raw.COSTO_MENSUAL ?? raw["COSTO MENSUAL"]),
-        OBSERVACION: String(raw.OBSERVACION || "").trim(),
+        TELEFONO: String(getValue(["telefono", "tel"])).trim(),
+        CODIGO: String(getValue(["codigo", "cod"])).trim(),
+        FECHA: String(getValue(["fecha", "date"])).trim(),
+        ASEGURADO: String(getValue(["asegurado", "cliente", "nombre"])).trim(),
+        COMPAÑIA: String(getValue(["compania", "aseguradora", "empresa"])).trim(),
+        POLIZA: String(getValue(["poliza", "numero_poliza", "nro_poliza", "numero de poliza", "n poliza", "nro poliza"])).trim(),
+        COBERTURA: String(getValue(["cobertura", "riesgo"])).trim(),
+        VENCIMIENTO: String(getValue(["vencimiento", "vto", "fecha_vto", "hasta"])).trim(),
+        REFERENCIAS: String(getValue(["referencias", "ref"])).trim(),
+        COSTO_MENSUAL: parseCost(getValue(["costo_mensual", "costo mensual", "cuota", "premio", "costo", "monto", "importe"])),
+        OBSERVACION: String(getValue(["observacion", "observaciones", "obs"])).trim(),
     };
 }
 
@@ -51,41 +70,33 @@ export async function fetchPolizas(): Promise<Poliza[]> {
     }
 
     try {
-        const res = await fetch(GET_DATA_URL!, { cache: "no-store" });
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        const data = await res.json();
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("No autenticado");
 
-        // Handle all possible n8n response formats:
-        // 1. Direct array: [{...}, {...}, ...]
-        // 2. Single object: {...} → wrap in array
-        // 3. Wrapped in property: { data: [...] } or { items: [...] }
-        let rawArray: Record<string, unknown>[];
-        if (Array.isArray(data)) {
-            rawArray = data;
-        } else if (data && typeof data === "object") {
-            // Check if it's a wrapper with a nested array
-            const nested = data.data || data.items || data.polizas || data.rows;
-            if (Array.isArray(nested)) {
-                rawArray = nested;
-            } else {
-                // Single object → wrap in array
-                rawArray = [data as Record<string, unknown>];
-            }
-        } else {
-            rawArray = [];
+        // Traer desde Supabase ordenado por fecha de creacion descendente
+        const { data, error } = await supabase
+            .from("polizas")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error(error);
+            throw new Error(error.message);
         }
 
-        const polizas = rawArray.map(normalizePoliza);
-        console.log(`✅ Loaded ${polizas.length} pólizas from n8n`);
+        const polizas = (data || []).map(normalizePoliza);
+        console.log(`✅ Loaded ${polizas.length} pólizas from Supabase`);
         return polizas;
     } catch (error) {
-        console.error("❌ Error fetching pólizas:", error);
+        console.error("❌ Error fetching pólizas from DB:", error);
         return mockPolizas; // Fallback to mock
     }
 }
 
 export async function sendNotification(poliza: Poliza): Promise<{ success: boolean; message: string }> {
-    if (USE_MOCK || !NOTIFY_URL) {
+    if (!NOTIFY_URL) {
         await new Promise((r) => setTimeout(r, 600));
         return {
             success: true,
@@ -94,10 +105,15 @@ export async function sendNotification(poliza: Poliza): Promise<{ success: boole
     }
 
     try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
         const res = await fetch(NOTIFY_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+                user_id: user?.id,
+                user_email: user?.email,
                 telefono: poliza.TELEFONO,
                 asegurado: poliza.ASEGURADO,
                 poliza: poliza.POLIZA,
@@ -116,34 +132,33 @@ export async function sendNotification(poliza: Poliza): Promise<{ success: boole
 }
 
 export async function sendChatMessage(message: string): Promise<string> {
-    if (USE_MOCK || !AGENT_URL) {
+    if (!AGENT_URL) {
         await new Promise((r) => setTimeout(r, 1200));
         const responses = [
-            `Según los registros, hay ${mockPolizas.filter((p) => p.ESTADO === "VIGENTE").length} pólizas vigentes actualmente.`,
-            `Las pólizas impagas suman un total de $${mockPolizas.filter((p) => p.ESTADO === "IMPAGA").reduce((sum, p) => sum + p.COSTO_MENSUAL, 0).toLocaleString("es-AR")} en riesgo mensual.`,
-            `El próximo vencimiento es de ${mockPolizas[0].ASEGURADO}, con la póliza ${mockPolizas[0].POLIZA} de ${mockPolizas[0].COMPAÑIA}.`,
+            `Según los registros locales, todo está en orden.`,
+            `No veo irregularidades en tu cartera hoy.`,
             "Puedo ayudarte a consultar estados de pólizas, vencimientos próximos, montos pendientes y más. ¿Qué necesitás saber?",
         ];
         return responses[Math.floor(Math.random() * responses.length)];
     }
 
     try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
         const res = await fetch(AGENT_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message }),
+            body: JSON.stringify({ message, user_id: user?.id }),
         });
         if (!res.ok) throw new Error(`Error ${res.status}`);
 
-        // n8n agents may return plain text or JSON
         const text = await res.text();
         try {
             let data = JSON.parse(text);
-            // n8n often returns an array with one item: [{ "output": "..." }]
             if (Array.isArray(data)) {
                 data = data[0] || {};
             }
-            // Handle various n8n response formats
             return (
                 data.output ??
                 data.response ??
@@ -155,7 +170,6 @@ export async function sendChatMessage(message: string): Promise<string> {
                 (typeof data === "string" ? data : JSON.stringify(data))
             );
         } catch {
-            // Response is plain text, not JSON
             return text || "Sin respuesta del agente.";
         }
     } catch (error) {
@@ -165,24 +179,32 @@ export async function sendChatMessage(message: string): Promise<string> {
 }
 
 export async function updatePolizaEstado(
-    polizaNumber: string,
+    polizaCodigo: string,
     nuevoEstado: string
 ): Promise<{ success: boolean; message: string }> {
-    if (USE_MOCK || !UPDATE_URL) {
+    if (USE_MOCK) {
         await new Promise((r) => setTimeout(r, 500));
         return {
             success: true,
-            message: `Estado de ${polizaNumber} actualizado a ${nuevoEstado} (simulado)`,
+            message: `Estado actualizado (simulado)`,
         };
     }
 
     try {
-        const res = await fetch(UPDATE_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ poliza: polizaNumber, estado: nuevoEstado }),
-        });
-        if (!res.ok) throw new Error(`Error ${res.status}`);
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("No autenticado");
+
+        const { error } = await supabase
+            .from("polizas")
+            .update({ estado: nuevoEstado })
+            .match({ codigo: polizaCodigo, user_id: user.id });
+
+        if (error) {
+            console.error("DB update error:", error);
+            throw new Error(error.message);
+        }
+
         return { success: true, message: `Estado actualizado a ${nuevoEstado}` };
     } catch (error) {
         console.error("Error updating estado:", error);
@@ -195,30 +217,51 @@ export async function createPoliza(
 ): Promise<{ success: boolean; message: string; codigo?: string }> {
     const newCodigo = `POL-${String(Date.now()).slice(-6)}`;
 
-    if (USE_MOCK || !CREATE_URL) {
+    if (USE_MOCK) {
         await new Promise((r) => setTimeout(r, 700));
         return {
             success: true,
-            message: `Póliza ${newCodigo} creada exitosamente (simulado)`,
+            message: `Póliza ${newCodigo} creada (simulado)`,
             codigo: newCodigo,
         };
     }
 
     try {
-        const res = await fetch(CREATE_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...poliza, CODIGO: newCodigo }),
-        });
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        const data = await res.json();
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("No autenticado");
+
+        const dbPayload = {
+            user_id: user.id,
+            estado: poliza.ESTADO,
+            telefono: poliza.TELEFONO,
+            codigo: newCodigo,
+            fecha: poliza.FECHA,
+            asegurado: poliza.ASEGURADO,
+            compania: poliza.COMPAÑIA,
+            numero_poliza: poliza.POLIZA,
+            cobertura: poliza.COBERTURA,
+            vencimiento: poliza.VENCIMIENTO,
+            costo_mensual: String(poliza.COSTO_MENSUAL),
+            observacion: poliza.OBSERVACION
+        };
+
+        const { error } = await supabase
+            .from("polizas")
+            .insert(dbPayload);
+
+        if (error) {
+            console.error("DB insert error:", error);
+            throw new Error(error.message);
+        }
+
         return {
             success: true,
             message: `Póliza creada exitosamente`,
-            codigo: data.codigo ?? newCodigo,
+            codigo: newCodigo,
         };
     } catch (error) {
         console.error("Error creating póliza:", error);
-        return { success: false, message: "Error al crear la póliza" };
+        return { success: false, message: "Error al crear la póliza en DB" };
     }
 }

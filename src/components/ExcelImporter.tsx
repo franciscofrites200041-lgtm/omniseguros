@@ -10,7 +10,8 @@ import {
     CheckCircle2,
     ArrowRight,
     X,
-    Server
+    Server,
+    Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,15 +24,22 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { normalizePoliza } from "@/lib/api";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 type ImportStep = "upload" | "preview" | "mapping";
 
 export function ExcelImporter() {
+    const router = useRouter();
     const [step, setStep] = useState<ImportStep>("upload");
     const [fileName, setFileName] = useState<string | null>(null);
     const [columns, setColumns] = useState<string[]>([]);
     const [previewData, setPreviewData] = useState<any[]>([]);
+    const [fullData, setFullData] = useState<any[]>([]);
     const [isParsing, setIsParsing] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         const file = acceptedFiles[0];
@@ -39,6 +47,7 @@ export function ExcelImporter() {
 
         setFileName(file.name);
         setIsParsing(true);
+        setUploadError(null);
 
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -46,28 +55,55 @@ export function ExcelImporter() {
                 const data = new Uint8Array(e.target?.result as ArrayBuffer);
                 const workbook = xlsx.read(data, { type: "array" });
 
-                // Get first sheet
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
 
-                // Convert to JSON (array of arrays for preview)
-                const jsonData = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+                // Extraemos TODO como una grilla cruda de arrays
+                const rawArrayData = xlsx.utils.sheet_to_json(worksheet, { header: 1, defval: "" }) as any[][];
 
-                if (jsonData.length > 0) {
-                    const extractedCols = jsonData[0] as string[];
-                    // Fill empty column names
-                    const cleanCols = extractedCols.map((c, i) => c ? String(c).trim() : `Columna ${i + 1}`);
+                if (rawArrayData.length > 0) {
+                    // 1. Encontrar la fila que realmente contiene los encabezados.
+                    // Asumimos que la fila de encabezados es la primera que tiene al menos 4 columnas no vacías
+                    let headerRowIndex = 0;
+                    for (let i = 0; i < Math.min(20, rawArrayData.length); i++) {
+                        const row = rawArrayData[i];
+                        const nonEmpties = row.filter(cell => cell && String(cell).trim().length > 0);
+                        if (nonEmpties.length >= 4) {
+                            headerRowIndex = i;
+                            break;
+                        }
+                    }
+
+                    // 2. Extraer los encabezados limpios
+                    const extractedCols = rawArrayData[headerRowIndex];
+                    const cleanCols = extractedCols.map((c, i) => c ? String(c).trim() : `Columna_${i + 1}`);
                     setColumns(cleanCols);
 
-                    // Take up to 10 rows for preview
-                    const rows = jsonData.slice(1, 11).filter((row: any) => row.length > 0);
-                    setPreviewData(rows);
+                    // 3. Extraer solo las filas de datos (después de los encabezados)
+                    // Ignoramos las filas completamente vacías
+                    const dataRows = rawArrayData.slice(headerRowIndex + 1).filter(row =>
+                        row.some(cell => cell !== undefined && cell !== null && String(cell).trim() !== "")
+                    );
+
+                    // 4. Convertir cada fila de array a un objeto usando los encabezados correctos
+                    const objectData = dataRows.map(row => {
+                        const obj: Record<string, any> = {};
+                        cleanCols.forEach((colName, index) => {
+                            obj[colName] = row[index];
+                        });
+                        return obj;
+                    });
+
+                    const rowsForPreview = objectData.slice(0, 10);
+                    setPreviewData(rowsForPreview.map(obj => Object.values(obj)));
+                    setFullData(objectData);
                 }
 
                 setIsParsing(false);
                 setStep("preview");
             } catch (error) {
                 console.error("Error al leer el archivo Excel", error);
+                setUploadError("El archivo no es válido o está corrupto.");
                 setIsParsing(false);
             }
         };
@@ -89,6 +125,88 @@ export function ExcelImporter() {
         setFileName(null);
         setColumns([]);
         setPreviewData([]);
+        setFullData([]);
+        setUploadError(null);
+    };
+
+    const handleImportToSupabase = async () => {
+        setIsUploading(true);
+        setUploadError(null);
+
+        try {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                throw new Error("Sesión expirada o inválida. Inicia sesión de nuevo.");
+            }
+
+            // Normalizar pólizas con el DTO
+            const polizasFormateadas = fullData.map(normalizePoliza);
+
+            console.log(`📊 Datos parseados del Excel: ${polizasFormateadas.length} filas`);
+            console.log(`📊 Ejemplo de primera fila:`, polizasFormateadas[0]);
+
+            // Armar payload de base de datos
+            // El CODIGO se guarda tal cual viene del Excel
+            const payload = polizasFormateadas.map((p, index) => ({
+                user_id: user.id,
+                estado: p.ESTADO || "VIGENTE",
+                telefono: p.TELEFONO,
+                codigo: p.CODIGO || "",
+                fecha: p.FECHA,
+                asegurado: p.ASEGURADO || "Sin nombre",
+                compania: p.COMPAÑIA || "Sin compañía",
+                numero_poliza: p.POLIZA || "Sin número",
+                cobertura: p.COBERTURA,
+                vencimiento: p.VENCIMIENTO,
+                costo_mensual: String(p.COSTO_MENSUAL),
+                observacion: p.OBSERVACION
+            }));
+
+            // PASO 1: Borrar TODOS los registros anteriores del usuario
+            // Esto asegura una carga limpia cada vez que se importa
+            const { error: deleteError } = await supabase
+                .from("polizas")
+                .delete()
+                .eq("user_id", user.id);
+
+            if (deleteError) {
+                console.error("Error al borrar datos anteriores:", deleteError);
+                throw new Error("Error al limpiar registros anteriores: " + deleteError.message);
+            }
+
+            console.log(`🗑️ Registros anteriores eliminados correctamente`);
+
+            // PASO 2: Insertar TODAS las filas nuevas por lotes
+            const chunkSize = 500;
+            let totalInserted = 0;
+            for (let i = 0; i < payload.length; i += chunkSize) {
+                const chunk = payload.slice(i, i + chunkSize);
+                const { error } = await supabase.from("polizas").insert(chunk);
+                if (error) {
+                    console.error(`Error insertando lote ${i}-${i + chunk.length}:`, error);
+                    throw new Error(`Error al guardar datos (fila ~${i + 1}): ${error.message}`);
+                }
+                totalInserted += chunk.length;
+                console.log(`✅ Insertadas ${totalInserted}/${payload.length} filas`);
+            }
+
+            // Cambiar la UI a estado de éxito internamente en lugar de un alert
+            setStep("success" as any);
+            setIsUploading(false);
+
+            // Redirigir suavemente luego de 2 segundos
+            setTimeout(() => {
+                router.push("/");
+                router.refresh();
+            }, 2000);
+
+        } catch (error: any) {
+            console.error("Error guardando datos:", error);
+            setUploadError(error.message || "Ocurrió un error al subir los datos.");
+            setIsUploading(false);
+        }
     };
 
     return (
@@ -100,7 +218,6 @@ export function ExcelImporter() {
                     <p className="text-zinc-500 mt-1">Carga tu base de datos desde un archivo Excel o CSV.</p>
                 </div>
 
-                {/* Indicador de progreso visual simple */}
                 <div className="hidden sm:flex items-center gap-3 text-sm font-medium">
                     <div className={cn("flex items-center gap-2", step === "upload" ? "text-blue-600" : "text-zinc-400")}>
                         <div className={cn("flex h-6 w-6 items-center justify-center rounded-full text-xs text-white", step === "upload" ? "bg-blue-600" : "bg-zinc-300")}>1</div>
@@ -109,7 +226,7 @@ export function ExcelImporter() {
                     <div className="w-8 h-px bg-zinc-200" />
                     <div className={cn("flex items-center gap-2", step === "preview" ? "text-blue-600" : "text-zinc-400")}>
                         <div className={cn("flex h-6 w-6 items-center justify-center rounded-full text-xs text-white", step === "preview" ? "bg-blue-600" : "bg-zinc-300")}>2</div>
-                        Validar Datos
+                        Validar y Guardar
                     </div>
                 </div>
             </div>
@@ -160,7 +277,6 @@ export function ExcelImporter() {
             {step === "preview" && (
                 <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 fade-in">
                     <Card className="border-emerald-200 shadow-sm overflow-hidden relative">
-                        {/* Cinta lateral de éxito decorativa */}
                         <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500" />
                         <CardContent className="p-6">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -170,19 +286,25 @@ export function ExcelImporter() {
                                     </div>
                                     <div>
                                         <h3 className="text-lg font-semibold text-zinc-900 flex items-center gap-2">
-                                            ¡Archivo leído con éxito!
+                                            ¡Archivo procesado con éxito!
                                         </h3>
                                         <p className="text-sm text-zinc-500 mt-1">
-                                            Archivo: <span className="font-medium text-zinc-700">{fileName}</span> ({columns.length} columnas detectadas)
+                                            Se van a importar <span className="font-medium text-zinc-700">{fullData.length}</span> registros de {fileName}
                                         </p>
                                     </div>
                                 </div>
-                                <Button variant="ghost" onClick={resetImport} className="text-zinc-500 hover:text-zinc-900 shrink-0">
-                                    <X className="h-4 w-4 mr-2" /> Cancelar y subir otro
+                                <Button variant="ghost" onClick={resetImport} disabled={isUploading} className="text-zinc-500 hover:text-zinc-900 shrink-0">
+                                    <X className="h-4 w-4 mr-2" /> Cancelar
                                 </Button>
                             </div>
                         </CardContent>
                     </Card>
+
+                    {uploadError && (
+                        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm font-medium">
+                            {uploadError}
+                        </div>
+                    )}
 
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
@@ -230,16 +352,38 @@ export function ExcelImporter() {
                                 <Server className="h-5 w-5 text-blue-600" />
                             </div>
                             <div>
-                                <h4 className="font-semibold text-zinc-900">Configuración de Base de Datos</h4>
+                                <h4 className="font-semibold text-zinc-900">Guardar Clientes</h4>
                                 <p className="text-sm text-zinc-600 mt-1 max-w-xl">
-                                    Aquí es donde conectaríamos los datos visuales con el Backend para el mapeo real de columnas (ej. Nombre {'->'} ASEGURADO) y su guardado en PostgreSQL.
+                                    Esta acción procesará y guardará de forma segura el registro en tu servidor.
                                 </p>
                             </div>
                         </div>
-                        <Button className="w-full sm:w-auto gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm shrink-0">
-                            Continuar a Mapeo <ArrowRight className="h-4 w-4" />
+                        <Button
+                            onClick={handleImportToSupabase}
+                            disabled={isUploading}
+                            className="w-full sm:w-auto gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm shrink-0"
+                        >
+                            {isUploading ? (
+                                <><Loader2 className="w-4 h-4 animate-spin" /> Cargando...</>
+                            ) : (
+                                <>Cargar registros <ArrowRight className="h-4 w-4" /></>
+                            )}
                         </Button>
                     </div>
+                </div>
+            )}
+
+            {/* Paso 3: Éxito */}
+            {(step as any) === "success" && (
+                <div className="mt-10 flex flex-col items-center justify-center text-center animate-in zoom-in-95 duration-500 fade-in">
+                    <div className="h-24 w-24 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-6 relative">
+                        <div className="absolute inset-0 rounded-full animate-ping bg-emerald-100 opacity-75"></div>
+                        <CheckCircle2 className="h-12 w-12 z-10" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-zinc-900 mb-2">¡Carga Completada!</h3>
+                    <p className="text-zinc-500 max-w-md">
+                        Se importaron correctamente {fullData.length} registros a tu área de trabajo segura. Te estamos redirigiendo a tu pantalla principal...
+                    </p>
                 </div>
             )}
         </div>

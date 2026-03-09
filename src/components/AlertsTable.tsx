@@ -164,7 +164,7 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                                     <TableHead className="pl-6 text-xs font-semibold uppercase tracking-wider text-zinc-500 w-[60%] sm:w-[70%]">
                                         Detalle de Póliza
                                     </TableHead>
-                                    <TableHead className="pr-6 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                                    <TableHead className="pr-6 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500">
                                         Vencimiento y Acción
                                     </TableHead>
                                 </TableRow>
@@ -195,7 +195,7 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                                                 </div>
                                             </TableCell>
                                             <TableCell className="pr-6 py-4 align-top">
-                                                <div className="flex flex-col items-start gap-2.5">
+                                                <div className="flex flex-col items-end gap-2">
                                                     {viewMode === "vencimientos" ? (
                                                         <div
                                                             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${getDaysColor(days)}`}
@@ -211,32 +211,15 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                                                         </span>
                                                     )}
 
-                                                    {isNotified ? (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            disabled
-                                                            className="h-8 gap-1.5 text-xs text-emerald-600"
-                                                        >
-                                                            <CheckCircle2 className="h-3.5 w-3.5" />
-                                                            Enviado
-                                                        </Button>
-                                                    ) : (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            onClick={() => handleNotify(poliza)}
-                                                            disabled={isNotifying}
-                                                            className="h-8 gap-1.5 border-blue-200 text-xs text-blue-600 transition-colors hover:bg-blue-50 hover:text-blue-700"
-                                                        >
-                                                            {isNotifying ? (
-                                                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                                            ) : (
-                                                                <Bell className="h-3.5 w-3.5" />
-                                                            )}
-                                                            Notificar
-                                                        </Button>
-                                                    )}
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        disabled
+                                                        className="h-8 gap-1.5 border-zinc-200 text-xs text-zinc-400 cursor-not-allowed"
+                                                    >
+                                                        <Bell className="h-3.5 w-3.5" />
+                                                        Próximamente
+                                                    </Button>
                                                 </div>
                                             </TableCell>
                                         </TableRow>

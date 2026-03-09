@@ -8,12 +8,22 @@ export function cn(...inputs: ClassValue[]) {
 
 /**
  * Parse date string in various formats to Date object.
- * Handles: DD/MM/YYYY, DD-MM-YYYY, D/M/YYYY, D-M-YYYY, etc.
+ * Handles: DD/MM/YYYY, DD-MM-YYYY, D/M/YYYY, D-M-YYYY, Excel serial numbers, etc.
  */
 export function parseDate(dateStr: string): Date {
   if (!dateStr) return new Date(0);
 
   const cleaned = dateStr.trim();
+
+  // Check if it's an Excel serial number (a pure number like 46085)
+  // Excel serial dates are typically between 1 (1/1/1900) and ~55000 (~2050)
+  const asNumber = Number(cleaned);
+  if (!isNaN(asNumber) && asNumber > 1000 && asNumber < 60000) {
+    // Convert Excel serial date to JS Date
+    // Excel epoch is 1/1/1900, but has a leap year bug for 1900, so we subtract 25569 days
+    // to convert from Excel epoch to Unix epoch (1/1/1970)
+    return new Date((asNumber - 25569) * 86400000);
+  }
 
   // Try DD/MM/YYYY or DD-MM-YYYY (with any separator)
   const parts = cleaned.split(/[\/\-]/);
