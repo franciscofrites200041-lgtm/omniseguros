@@ -6,7 +6,7 @@ export default function CotizadorExternoPage() {
             {/* EL IFRAME OCUPANDO TODO EL RESTO DE LA PANTALLA */}
             <div className="flex-1 w-full overflow-hidden">
                 <iframe
-                    src="http://inncome.net/cotizador-iframe"
+                    src="https://inncome.net/cotizador-iframe"
                     title="Cotizador Innmed"
                     className="w-full h-full border-none"
                     allow="payment" // Por si usás MercadoPago en el otro proyecto
