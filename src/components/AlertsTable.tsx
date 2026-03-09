@@ -158,13 +158,13 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                     </div>
                 ) : (
                     <div className="max-h-[calc(100vh-16rem)] overflow-y-auto overflow-x-auto">
-                        <Table>
+                        <Table className="table-fixed w-full">
                             <TableHeader>
                                 <TableRow className="hover:bg-transparent">
-                                    <TableHead className="pl-6 text-xs font-semibold uppercase tracking-wider text-zinc-500 w-[60%] xl:w-[65%]">
+                                    <TableHead className="pl-4 text-[10px] font-semibold uppercase tracking-wider text-zinc-500 w-[55%]">
                                         Detalle de Póliza
                                     </TableHead>
-                                    <TableHead className="pr-6 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 w-[40%] xl:w-[35%]">
+                                    <TableHead className="pr-4 text-right text-[10px] font-semibold uppercase tracking-wider text-zinc-500 w-[45%]">
                                         Vencimiento y Acción
                                     </TableHead>
                                 </TableRow>
@@ -180,21 +180,19 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                                             key={poliza.CODIGO}
                                             className="group transition-colors hover:bg-zinc-50/50"
                                         >
-                                            <TableCell className="pl-6 py-4 align-top">
-                                                <div className="flex flex-col gap-1.5 pt-1">
-                                                    <p className="text-sm font-semibold text-zinc-900">
+                                            <TableCell className="pl-4 py-3 align-top">
+                                                <div className="flex flex-col gap-1 pt-1">
+                                                    <p className="text-[13px] font-semibold text-zinc-900 leading-tight">
                                                         {poliza.ASEGURADO}
                                                     </p>
-                                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-medium text-zinc-500">
-                                                        <span className="text-zinc-600">{poliza.COMPAÑIA}</span>
-                                                        <span className="text-zinc-300">•</span>
-                                                        <span className="font-mono text-zinc-600">{poliza.POLIZA}</span>
-                                                        <span className="text-zinc-300">•</span>
+                                                    <div className="flex flex-col gap-0.5 text-[12px] font-medium text-zinc-500">
+                                                        <span className="text-zinc-600 truncate">{poliza.COMPAÑIA}</span>
+                                                        <span className="font-mono text-zinc-500 text-[11px] truncate">Pól: {poliza.POLIZA}</span>
                                                         <span className="text-zinc-700">{formatCurrency(poliza.COSTO_MENSUAL)}</span>
                                                     </div>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="pr-6 py-4 align-top">
+                                            <TableCell className="pr-4 py-3 align-top">
                                                 <div className="flex flex-col items-end gap-2">
                                                     {viewMode === "vencimientos" ? (
                                                         <div
@@ -215,10 +213,10 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                                                         size="sm"
                                                         variant="outline"
                                                         disabled
-                                                        className="h-8 gap-1.5 border-zinc-200 text-xs text-zinc-400 cursor-not-allowed"
+                                                        className="h-7 px-2 gap-1.5 border-zinc-200 text-[11px] text-zinc-400 cursor-not-allowed max-w-full"
                                                     >
-                                                        <Bell className="h-3.5 w-3.5" />
-                                                        Próximamente
+                                                        <Bell className="h-3 w-3 shrink-0" />
+                                                        <span className="truncate">Próximamente</span>
                                                     </Button>
                                                 </div>
                                             </TableCell>
