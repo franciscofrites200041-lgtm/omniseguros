@@ -60,13 +60,13 @@ export function KpiCards({ data, loading }: KpiCardsProps) {
                         <p className="text-sm font-medium text-zinc-500">
                             {kpi.title}
                         </p>
-                        <p className="text-2xl font-bold tracking-tight text-zinc-900">
+                        <p className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 break-words">
                             {kpi.value}
                         </p>
                         <p className="text-xs text-zinc-400">{kpi.subtitle}</p>
                     </div>
                     <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-lg ${kpi.bgColor}`}
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${kpi.bgColor}`}
                     >
                         <kpi.icon className={`h-5 w-5 ${kpi.accentColor}`} />
                     </div>

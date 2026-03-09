@@ -41,7 +41,7 @@ export function MetricsModal({ children }: MetricsModalProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="max-h-[90vh] sm:max-w-[700px] overflow-y-auto">
+            <DialogContent className="max-h-[90vh] w-[95vw] sm:max-w-[700px] overflow-y-auto p-4 sm:p-6">
                 <DialogHeader className="mb-4">
                     <DialogTitle className="text-xl font-semibold text-zinc-900">
                         Métricas Generales
@@ -61,7 +61,7 @@ export function MetricsModal({ children }: MetricsModalProps) {
                     </div>
 
                     {/* KPIs */}
-                    <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                         {/* Proyectado a Cobrar */}
                         <Card className="relative overflow-hidden border-zinc-200 border-l-4 border-l-emerald-500">
                             <CardContent className="p-6">
@@ -70,18 +70,18 @@ export function MetricsModal({ children }: MetricsModalProps) {
                                         <p className="text-sm font-medium text-zinc-500">
                                             Proyectado a Cobrar
                                         </p>
-                                        <p className="text-2xl font-bold tracking-tight text-zinc-900">
+                                        <p className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 break-words">
                                             {loading || !kpis ? (
                                                 <span className="inline-block h-8 w-32 animate-pulse rounded bg-zinc-200" />
                                             ) : (
                                                 formatCurrency(kpis.montoProyectado)
                                             )}
                                         </p>
-                                        <p className="text-xs text-zinc-400">
+                                        <p className="text-[11px] sm:text-xs text-zinc-400">
                                             Monto mensual vigente
                                         </p>
                                     </div>
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50">
                                         <TrendingUp className="h-5 w-5 text-emerald-600" />
                                     </div>
                                 </div>
@@ -96,18 +96,18 @@ export function MetricsModal({ children }: MetricsModalProps) {
                                         <p className="text-sm font-medium text-zinc-500">
                                             Monto en Riesgo
                                         </p>
-                                        <p className="text-2xl font-bold tracking-tight text-zinc-900">
+                                        <p className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 break-words">
                                             {loading || !kpis ? (
                                                 <span className="inline-block h-8 w-32 animate-pulse rounded bg-zinc-200" />
                                             ) : (
                                                 formatCurrency(kpis.montoEnRiesgo)
                                             )}
                                         </p>
-                                        <p className="text-xs text-zinc-400">
+                                        <p className="text-[11px] sm:text-xs text-zinc-400">
                                             Pólizas impagas
                                         </p>
                                     </div>
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50">
                                         <AlertTriangle className="h-5 w-5 text-red-600" />
                                     </div>
                                 </div>
