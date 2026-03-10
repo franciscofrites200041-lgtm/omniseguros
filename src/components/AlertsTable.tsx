@@ -71,9 +71,12 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
     const [notifyingId, setNotifyingId] = useState<string | null>(null);
     const [notifiedIds, setNotifiedIds] = useState<Set<string>>(new Set());
     const [viewMode, setViewMode] = useState<ViewMode>("vencimientos");
+    const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
 
     const impagas = allPolizas.filter((p) => p.ESTADO === "IMPAGA");
-    const displayData = viewMode === "vencimientos" ? polizas : impagas;
+    const displayData = (viewMode === "vencimientos" ? polizas : impagas).filter(
+        (p) => !hiddenIds.has(p.id || p.CODIGO)
+    );
     const labels = viewLabels[viewMode];
 
     const handleNotify = async (poliza: Poliza) => {
@@ -86,6 +89,15 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
         } finally {
             setNotifyingId(null);
         }
+    };
+
+    const handleMarkNotified = (poliza: Poliza) => {
+        const id = poliza.id || poliza.CODIGO;
+        setNotifiedIds((prev) => new Set([...prev, id]));
+        // Wait for animation before removing from list
+        setTimeout(() => {
+            setHiddenIds((prev) => new Set([...prev, id]));
+        }, 500);
     };
 
     const getDaysLabel = (days: number) => {
@@ -172,13 +184,14 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                             <TableBody>
                                 {displayData.map((poliza) => {
                                     const days = daysUntil(poliza.VENCIMIENTO);
-                                    const isNotifying = notifyingId === poliza.CODIGO;
-                                    const isNotified = notifiedIds.has(poliza.CODIGO);
+                                    const id = poliza.id || poliza.CODIGO;
+                                    const isNotified = notifiedIds.has(id);
 
                                     return (
                                         <TableRow
-                                            key={poliza.CODIGO}
-                                            className="group transition-colors hover:bg-zinc-50/50"
+                                            key={id}
+                                            className={`group transition-all duration-500 ease-in-out hover:bg-zinc-50/50 ${isNotified ? "opacity-0 translate-x-8" : "opacity-100 translate-x-0"
+                                                }`}
                                         >
                                             <TableCell className="pl-4 py-3 align-top">
                                                 <div className="flex flex-col gap-1 pt-1">
@@ -211,12 +224,25 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
 
                                                     <Button
                                                         size="sm"
-                                                        variant="outline"
-                                                        disabled
-                                                        className="h-7 px-2 gap-1.5 border-zinc-200 text-[11px] text-zinc-400 cursor-not-allowed max-w-full"
+                                                        variant={isNotified ? "default" : "outline"}
+                                                        onClick={() => handleMarkNotified(poliza)}
+                                                        disabled={isNotified}
+                                                        className={`h-7 px-2 gap-1.5 text-[11px] max-w-full transition-colors ${isNotified
+                                                                ? "bg-emerald-500 text-white hover:bg-emerald-600 border-none"
+                                                                : "border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                                                            }`}
                                                     >
-                                                        <Bell className="h-3 w-3 shrink-0" />
-                                                        <span className="truncate">Próximamente</span>
+                                                        {isNotified ? (
+                                                            <>
+                                                                <CheckCircle2 className="h-3 w-3 shrink-0" />
+                                                                <span className="truncate">Listo</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Bell className="h-3 w-3 shrink-0" />
+                                                                <span className="truncate">Marcar Notificado</span>
+                                                            </>
+                                                        )}
                                                     </Button>
                                                 </div>
                                             </TableCell>
