@@ -237,7 +237,6 @@ export async function updatePolizaFull(
         if (polizaUpdate.POLIZA !== undefined) payload.numero_poliza = polizaUpdate.POLIZA;
         if (polizaUpdate.COBERTURA !== undefined) payload.cobertura = polizaUpdate.COBERTURA;
         if (polizaUpdate.VENCIMIENTO !== undefined) payload.vencimiento = polizaUpdate.VENCIMIENTO;
-        if (polizaUpdate.REFERENCIAS !== undefined) payload.referencias = polizaUpdate.REFERENCIAS;
         if (polizaUpdate.OBSERVACION !== undefined) payload.observacion = polizaUpdate.OBSERVACION;
         if (polizaUpdate.COSTO_MENSUAL !== undefined) payload.costo_mensual = String(polizaUpdate.COSTO_MENSUAL);
 
