@@ -48,6 +48,7 @@ export function EditClienteModal({
     const [selectedPoliza, setSelectedPoliza] = useState<Poliza | null>(null);
     const [form, setForm] = useState<Partial<Poliza>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitResult, setSubmitResult] = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
     // Filtrado simple por nombre o numero de poliza
     const filteredPolizas = useMemo(() => {
@@ -66,10 +67,12 @@ export function EditClienteModal({
         setSelectedPoliza(poliza);
         setForm({ ...poliza });
         setSearchTerm("");
+        setSubmitResult(null);
     };
 
     const handleChange = (field: keyof Poliza, value: string) => {
         setForm((prev) => ({ ...prev, [field]: value }));
+        setSubmitResult(null);
     };
 
     const handleDateChange = (field: keyof Poliza, date: Date | undefined) => {
@@ -82,7 +85,14 @@ export function EditClienteModal({
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        if (!selectedPoliza || !form.ASEGURADO || !form.COMPAÑIA || !form.POLIZA) return;
+        setSubmitResult(null);
+
+        if (!selectedPoliza) return;
+
+        if (!form.ASEGURADO || !form.COMPAÑIA || !form.POLIZA) {
+            setSubmitResult({ type: "error", msg: "Los campos Asegurado, Compañía y Nro. Póliza son obligatorios." });
+            return;
+        }
 
         setIsSubmitting(true);
         try {
@@ -93,13 +103,22 @@ export function EditClienteModal({
 
             const result = await updatePolizaFull(selectedPoliza.CODIGO, polizaData);
             if (result.success) {
+                setSubmitResult({ type: "success", msg: "¡Cambios guardados correctamente!" });
                 const finalPoliza: Poliza = {
                     ...selectedPoliza,
                     ...polizaData,
                 } as Poliza;
                 onUpdated(finalPoliza);
-                handleClose();
+
+                // Cerrar después de 1 segundo para mostrar el mensaje de éxito
+                setTimeout(() => {
+                    handleClose();
+                }, 1000);
+            } else {
+                setSubmitResult({ type: "error", msg: result.message || "Error al guardar los cambios." });
             }
+        } catch (error: any) {
+            setSubmitResult({ type: "error", msg: error.message || "Ocurrió un error inesperado al comunicar con la base de datos." });
         } finally {
             setIsSubmitting(false);
         }
@@ -109,6 +128,7 @@ export function EditClienteModal({
         setSearchTerm("");
         setSelectedPoliza(null);
         setForm({});
+        setSubmitResult(null);
         onClose();
     };
 
@@ -370,6 +390,16 @@ export function EditClienteModal({
                             />
                         </div>
 
+                        {/* Mensaje de resultado (Feedback) */}
+                        {submitResult && (
+                            <div className={cn(
+                                "p-3 rounded-md text-sm font-medium",
+                                submitResult.type === "success" ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : "bg-red-50 text-red-600 border border-red-200"
+                            )}>
+                                {submitResult.msg}
+                            </div>
+                        )}
+
                         <DialogFooter className="pt-2">
                             <Button
                                 type="button"
@@ -381,8 +411,11 @@ export function EditClienteModal({
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={isSubmitting || !form.ASEGURADO || !form.COMPAÑIA || !form.POLIZA}
-                                className="gap-2 bg-blue-600 hover:bg-blue-700"
+                                disabled={isSubmitting || submitResult?.type === "success"}
+                                className={cn(
+                                    "gap-2",
+                                    submitResult?.type === "success" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-blue-600 hover:bg-blue-700"
+                                )}
                             >
                                 {isSubmitting ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
