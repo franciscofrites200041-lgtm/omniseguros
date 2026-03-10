@@ -69,14 +69,36 @@ export function parseCost(value: unknown): number {
 }
 
 /**
- * Calculate days remaining until a date
+ * Calculate the next monthly occurrence of a given date
+ */
+export function getNextExpiration(dateStr: string): Date {
+  const parsed = parseDate(dateStr);
+  if (parsed.getTime() === 0) return new Date(0);
+
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  const targetDay = parsed.getDate();
+
+  // Intentar con el mes actual
+  let nextTarget = new Date(now.getFullYear(), now.getMonth(), targetDay);
+
+  // Si ese día del mes actual ya pasó, el próximo es el mes que viene
+  if (nextTarget.getTime() < now.getTime()) {
+    nextTarget = new Date(now.getFullYear(), now.getMonth() + 1, targetDay);
+  }
+
+  return nextTarget;
+}
+
+/**
+ * Calculate days remaining until the next monthly expiration date
  */
 export function daysUntil(dateStr: string): number {
-  const target = parseDate(dateStr);
+  const target = getNextExpiration(dateStr);
   if (target.getTime() === 0) return -1;
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-  target.setHours(0, 0, 0, 0);
   const diff = target.getTime() - now.getTime();
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }

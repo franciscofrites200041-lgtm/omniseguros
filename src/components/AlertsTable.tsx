@@ -28,7 +28,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Poliza } from "@/lib/types";
-import { formatCurrency, daysUntil } from "@/lib/utils";
+import { formatCurrency, daysUntil, getNextExpiration } from "@/lib/utils";
 import { sendNotification } from "@/lib/api";
 
 interface AlertsTableProps {
@@ -87,9 +87,12 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
     }, []);
 
     const impagas = allPolizas.filter((p) => p.ESTADO === "IMPAGA");
-    const displayData = (viewMode === "vencimientos" ? polizas : impagas).filter(
-        (p) => !mounted || !hiddenIds.has(`${p.id || p.CODIGO}_${p.VENCIMIENTO}`)
-    );
+    const displayData = (viewMode === "vencimientos" ? polizas : impagas).filter((p) => {
+        if (!mounted) return true;
+        const nextTarget = getNextExpiration(p.VENCIMIENTO);
+        const alertKey = `${p.id || p.CODIGO}_${nextTarget.getMonth()}_${nextTarget.getFullYear()}`;
+        return !hiddenIds.has(alertKey);
+    });
     const labels = viewLabels[viewMode];
 
     const handleNotify = async (poliza: Poliza) => {
@@ -106,7 +109,8 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
 
     const handleMarkNotified = (poliza: Poliza) => {
         const id = poliza.id || poliza.CODIGO;
-        const alertKey = `${id}_${poliza.VENCIMIENTO}`;
+        const nextTarget = getNextExpiration(poliza.VENCIMIENTO);
+        const alertKey = `${id}_${nextTarget.getMonth()}_${nextTarget.getFullYear()}`;
 
         setNotifiedIds((prev) => new Set([...prev, id]));
         // Wait for animation before removing from list
