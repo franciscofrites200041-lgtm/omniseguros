@@ -1,6 +1,7 @@
 import { Poliza } from "./types";
 import { mockPolizas } from "./mock-data";
-import { parseCost } from "./utils";
+import { parseCost, parseDate } from "./utils";
+import { format } from "date-fns";
 import { createClient } from "@/utils/supabase/client";
 
 const GET_DATA_URL = process.env.NEXT_PUBLIC_N8N_GET_DATA_WEBHOOK;
@@ -45,6 +46,9 @@ export function normalizePoliza(raw: Record<string, unknown>): Poliza {
         return "";
     };
 
+    const rawFecha = String(getValue(["fecha", "date"])).trim();
+    const rawVencimiento = String(getValue(["vencimiento", "vto", "fecha_vto", "hasta"])).trim();
+
     return {
         id: raw.id ? String(raw.id) : undefined,
         ESTADO: String(getValue(["estado", "est", "status", "col_1"]))
@@ -52,12 +56,12 @@ export function normalizePoliza(raw: Record<string, unknown>): Poliza {
             .toUpperCase(),
         TELEFONO: String(getValue(["telefono", "tel"])).trim(),
         CODIGO: String(getValue(["codigo", "cod"])).trim(),
-        FECHA: String(getValue(["fecha", "date"])).trim(),
+        FECHA: rawFecha ? format(parseDate(rawFecha), "dd/MM/yyyy") : "",
         ASEGURADO: String(getValue(["asegurado", "cliente", "nombre"])).trim(),
         COMPAÑIA: String(getValue(["compania", "aseguradora", "empresa"])).trim(),
         POLIZA: String(getValue(["poliza", "numero_poliza", "nro_poliza", "numero de poliza", "n poliza", "nro poliza"])).trim(),
         COBERTURA: String(getValue(["cobertura", "riesgo"])).trim(),
-        VENCIMIENTO: String(getValue(["vencimiento", "vto", "fecha_vto", "hasta"])).trim(),
+        VENCIMIENTO: rawVencimiento ? format(parseDate(rawVencimiento), "dd/MM/yyyy") : "",
         REFERENCIAS: String(getValue(["referencias", "ref"])).trim(),
         COSTO_MENSUAL: parseCost(getValue(["costo_mensual", "costo mensual", "cuota", "premio", "costo", "monto", "importe"])),
         OBSERVACION: String(getValue(["observacion", "observaciones", "obs"])).trim(),
