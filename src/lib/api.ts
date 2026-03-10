@@ -46,6 +46,7 @@ export function normalizePoliza(raw: Record<string, unknown>): Poliza {
     };
 
     return {
+        id: raw.id ? String(raw.id) : undefined,
         ESTADO: String(getValue(["estado", "est", "status", "col_1"]))
             .trim()
             .toUpperCase(),
@@ -213,7 +214,7 @@ export async function updatePolizaEstado(
 }
 
 export async function updatePolizaFull(
-    codigo: string,
+    idOrCodigo: string,
     polizaUpdate: Partial<Poliza>
 ): Promise<{ success: boolean; message: string }> {
     if (USE_MOCK) {
@@ -240,10 +241,14 @@ export async function updatePolizaFull(
         if (polizaUpdate.OBSERVACION !== undefined) payload.observacion = polizaUpdate.OBSERVACION;
         if (polizaUpdate.COSTO_MENSUAL !== undefined) payload.costo_mensual = String(polizaUpdate.COSTO_MENSUAL);
 
+        const matchCriteria = idOrCodigo.includes('-') && idOrCodigo.length > 30
+            ? { id: idOrCodigo, user_id: user.id }
+            : { codigo: idOrCodigo, user_id: user.id };
+
         const { error } = await supabase
             .from("polizas")
             .update(payload)
-            .match({ codigo, user_id: user.id });
+            .match(matchCriteria);
 
         if (error) {
             console.error("DB full update error:", error);
@@ -258,8 +263,8 @@ export async function updatePolizaFull(
 }
 
 export async function createPoliza(
-    poliza: Omit<Poliza, "CODIGO">
-): Promise<{ success: boolean; message: string; codigo?: string }> {
+    poliza: Omit<Poliza, "CODIGO" | "id">
+): Promise<{ success: boolean; message: string; codigo?: string; id?: string }> {
     const newCodigo = `POL-${String(Date.now()).slice(-6)}`;
 
     if (USE_MOCK) {
@@ -291,9 +296,11 @@ export async function createPoliza(
             observacion: poliza.OBSERVACION
         };
 
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("polizas")
-            .insert(dbPayload);
+            .insert(dbPayload)
+            .select()
+            .single();
 
         if (error) {
             console.error("DB insert error:", error);
@@ -304,6 +311,7 @@ export async function createPoliza(
             success: true,
             message: `Póliza creada exitosamente`,
             codigo: newCodigo,
+            id: data?.id
         };
     } catch (error) {
         console.error("Error creating póliza:", error);

@@ -32,7 +32,10 @@ export default function DashboardPage() {
 
   const handlePolizaUpdated = (updatedPoliza: Poliza) => {
     setPolizas((prev) =>
-      prev.map((p) => p.CODIGO === updatedPoliza.CODIGO ? updatedPoliza : p)
+      prev.map((p) => {
+        if (p.id && updatedPoliza.id) return p.id === updatedPoliza.id ? updatedPoliza : p;
+        return p.CODIGO === updatedPoliza.CODIGO ? updatedPoliza : p;
+      })
     );
   };
 

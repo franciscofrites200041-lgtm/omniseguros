@@ -101,7 +101,7 @@ export function EditClienteModal({
                 COSTO_MENSUAL: typeof form.COSTO_MENSUAL === "string" ? parseFloat(form.COSTO_MENSUAL) || 0 : form.COSTO_MENSUAL,
             };
 
-            const result = await updatePolizaFull(selectedPoliza.CODIGO, polizaData);
+            const result = await updatePolizaFull(selectedPoliza.id || selectedPoliza.CODIGO, polizaData);
             if (result.success) {
                 setSubmitResult({ type: "success", msg: "¡Cambios guardados correctamente!" });
                 const finalPoliza: Poliza = {

@@ -1,4 +1,5 @@
 export interface Poliza {
+  id?: string;
   ESTADO: string; // VIGENTE, IMPAGA, A RENOVAR, ANULADO, OBSERVACION, etc.
   TELEFONO: string;
   CODIGO: string;
