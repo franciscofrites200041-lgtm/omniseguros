@@ -65,11 +65,6 @@ export function KpiCards({ data, loading }: KpiCardsProps) {
                         </p>
                         <p className="text-xs text-zinc-400">{kpi.subtitle}</p>
                     </div>
-                    <div
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${kpi.bgColor}`}
-                    >
-                        <kpi.icon className={`h-5 w-5 ${kpi.accentColor}`} />
-                    </div>
                 </div>
             </CardContent>
         </Card>
