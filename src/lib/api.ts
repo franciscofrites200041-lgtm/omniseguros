@@ -212,6 +212,51 @@ export async function updatePolizaEstado(
     }
 }
 
+export async function updatePolizaFull(
+    codigo: string,
+    polizaUpdate: Partial<Poliza>
+): Promise<{ success: boolean; message: string }> {
+    if (USE_MOCK) {
+        await new Promise((r) => setTimeout(r, 600));
+        return { success: true, message: `Póliza/Cliente actualizado (simulado)` };
+    }
+
+    try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("No autenticado");
+
+        // Construir payload
+        const payload: Record<string, any> = {};
+        if (polizaUpdate.ESTADO !== undefined) payload.estado = polizaUpdate.ESTADO;
+        if (polizaUpdate.TELEFONO !== undefined) payload.telefono = polizaUpdate.TELEFONO;
+        if (polizaUpdate.FECHA !== undefined) payload.fecha = polizaUpdate.FECHA;
+        if (polizaUpdate.ASEGURADO !== undefined) payload.asegurado = polizaUpdate.ASEGURADO;
+        if (polizaUpdate.COMPAÑIA !== undefined) payload.compania = polizaUpdate.COMPAÑIA;
+        if (polizaUpdate.POLIZA !== undefined) payload.numero_poliza = polizaUpdate.POLIZA;
+        if (polizaUpdate.COBERTURA !== undefined) payload.cobertura = polizaUpdate.COBERTURA;
+        if (polizaUpdate.VENCIMIENTO !== undefined) payload.vencimiento = polizaUpdate.VENCIMIENTO;
+        if (polizaUpdate.REFERENCIAS !== undefined) payload.referencias = polizaUpdate.REFERENCIAS;
+        if (polizaUpdate.OBSERVACION !== undefined) payload.observacion = polizaUpdate.OBSERVACION;
+        if (polizaUpdate.COSTO_MENSUAL !== undefined) payload.costo_mensual = String(polizaUpdate.COSTO_MENSUAL);
+
+        const { error } = await supabase
+            .from("polizas")
+            .update(payload)
+            .match({ codigo, user_id: user.id });
+
+        if (error) {
+            console.error("DB full update error:", error);
+            throw new Error(error.message);
+        }
+
+        return { success: true, message: "Datos actualizados correctamente" };
+    } catch (error) {
+        console.error("Error full update:", error);
+        return { success: false, message: "Error al actualizar los datos en DB" };
+    }
+}
+
 export async function createPoliza(
     poliza: Omit<Poliza, "CODIGO">
 ): Promise<{ success: boolean; message: string; codigo?: string }> {

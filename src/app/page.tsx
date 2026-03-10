@@ -8,6 +8,7 @@ import { CotizadorCard } from "@/components/CotizadorCard";
 import { AiChatWidget } from "@/components/AiChatWidget";
 import { MetricsModal } from "@/components/MetricsModal";
 import { NewPolizaModal } from "@/components/NewPolizaModal";
+import { EditClienteModal } from "@/components/EditClienteModal";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ClipboardList, BarChart2, Plus, UserCog } from "lucide-react";
@@ -23,9 +24,16 @@ export default function DashboardPage() {
   const [polizas, setPolizas] = useState<Poliza[]>([]);
   const [loading, setLoading] = useState(true);
   const [isNewPolizaOpen, setIsNewPolizaOpen] = useState(false);
+  const [isEditClienteOpen, setIsEditClienteOpen] = useState(false);
 
   const handlePolizaCreated = (newPoliza: Poliza) => {
     setPolizas((prev) => [newPoliza, ...prev]);
+  };
+
+  const handlePolizaUpdated = (updatedPoliza: Poliza) => {
+    setPolizas((prev) =>
+      prev.map((p) => p.CODIGO === updatedPoliza.CODIGO ? updatedPoliza : p)
+    );
   };
 
   useEffect(() => {
@@ -83,7 +91,11 @@ export default function DashboardPage() {
                 <span className="text-sm font-semibold">Nueva Póliza</span>
               </Button>
 
-              <Button variant="outline" className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
+              <Button
+                variant="outline"
+                className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md"
+                onClick={() => setIsEditClienteOpen(true)}
+              >
                 <UserCog className="h-8 w-8 text-zinc-500" />
                 <span className="text-sm font-semibold text-center leading-tight">Modificar<br />Cliente</span>
               </Button>
@@ -93,6 +105,12 @@ export default function DashboardPage() {
             open={isNewPolizaOpen}
             onClose={() => setIsNewPolizaOpen(false)}
             onCreated={handlePolizaCreated}
+          />
+          <EditClienteModal
+            open={isEditClienteOpen}
+            onClose={() => setIsEditClienteOpen(false)}
+            polizas={polizas}
+            onUpdated={handlePolizaUpdated}
           />
         </section>
 
