@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Bell,
     Loader2,
@@ -72,10 +72,23 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
     const [notifiedIds, setNotifiedIds] = useState<Set<string>>(new Set());
     const [viewMode, setViewMode] = useState<ViewMode>("vencimientos");
     const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        const stored = localStorage.getItem("omniseguros_hidden_alerts");
+        if (stored) {
+            try {
+                setHiddenIds(new Set(JSON.parse(stored)));
+            } catch (e) {
+                console.error("Error parsing hidden alerts from local storage", e);
+            }
+        }
+    }, []);
 
     const impagas = allPolizas.filter((p) => p.ESTADO === "IMPAGA");
     const displayData = (viewMode === "vencimientos" ? polizas : impagas).filter(
-        (p) => !hiddenIds.has(p.id || p.CODIGO)
+        (p) => !mounted || !hiddenIds.has(`${p.id || p.CODIGO}_${p.VENCIMIENTO}`)
     );
     const labels = viewLabels[viewMode];
 
@@ -93,10 +106,16 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
 
     const handleMarkNotified = (poliza: Poliza) => {
         const id = poliza.id || poliza.CODIGO;
+        const alertKey = `${id}_${poliza.VENCIMIENTO}`;
+
         setNotifiedIds((prev) => new Set([...prev, id]));
         // Wait for animation before removing from list
         setTimeout(() => {
-            setHiddenIds((prev) => new Set([...prev, id]));
+            setHiddenIds((prev) => {
+                const next = new Set([...prev, alertKey]);
+                localStorage.setItem("omniseguros_hidden_alerts", JSON.stringify(Array.from(next)));
+                return next;
+            });
         }, 500);
     };
 
@@ -228,8 +247,8 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                                                         onClick={() => handleMarkNotified(poliza)}
                                                         disabled={isNotified}
                                                         className={`h-7 px-2 gap-1.5 text-[11px] max-w-full transition-colors ${isNotified
-                                                                ? "bg-emerald-500 text-white hover:bg-emerald-600 border-none"
-                                                                : "border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                                                            ? "bg-emerald-500 text-white hover:bg-emerald-600 border-none"
+                                                            : "border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
                                                             }`}
                                                     >
                                                         {isNotified ? (
