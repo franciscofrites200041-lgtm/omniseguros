@@ -251,9 +251,9 @@ export async function updatePolizaFull(
         }
 
         return { success: true, message: "Datos actualizados correctamente" };
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error full update:", error);
-        return { success: false, message: "Error al actualizar los datos en DB" };
+        return { success: false, message: error.message || "Error al actualizar los datos en DB" };
     }
 }
 
