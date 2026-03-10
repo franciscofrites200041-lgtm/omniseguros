@@ -53,16 +53,7 @@ export default function DashboardPage() {
       <Header />
 
       <main className="grid gap-8 px-8 py-8 lg:grid-cols-3">
-        {/* Alerts (Izquierda) */}
-        <section className="lg:col-span-1">
-          <AlertsTable
-            polizas={expiringPolizas}
-            allPolizas={polizas}
-            loading={loading}
-          />
-        </section>
-
-        {/* KPI Cards & Navbar (Centro) */}
+        {/* KPI Cards & Navbar (Izquierda) */}
         <section className="lg:col-span-1">
           <div className="flex flex-col items-center gap-6 h-full">
             <KpiCards data={kpis} loading={loading} />
@@ -102,6 +93,15 @@ export default function DashboardPage() {
             open={isNewPolizaOpen}
             onClose={() => setIsNewPolizaOpen(false)}
             onCreated={handlePolizaCreated}
+          />
+        </section>
+
+        {/* Alerts (Centro) */}
+        <section className="lg:col-span-1">
+          <AlertsTable
+            polizas={expiringPolizas}
+            allPolizas={polizas}
+            loading={loading}
           />
         </section>
 
