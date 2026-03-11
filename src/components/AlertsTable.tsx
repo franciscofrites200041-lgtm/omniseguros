@@ -20,6 +20,19 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 import {
     DropdownMenu,
@@ -29,12 +42,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Poliza } from "@/lib/types";
 import { formatCurrency, daysUntil, getNextExpiration } from "@/lib/utils";
-import { sendNotification } from "@/lib/api";
+import { sendNotification, updatePolizaFull } from "@/lib/api";
 
 interface AlertsTableProps {
     polizas: Poliza[];
     allPolizas: Poliza[];
     loading?: boolean;
+    onUpdated?: (updatedPoliza: Poliza) => void;
 }
 
 type ViewMode = "vencimientos" | "impagas";
@@ -67,12 +81,16 @@ function TableSkeleton() {
     );
 }
 
-export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) {
+export function AlertsTable({ polizas, allPolizas, loading, onUpdated }: AlertsTableProps) {
     const [notifyingId, setNotifyingId] = useState<string | null>(null);
     const [notifiedIds, setNotifiedIds] = useState<Set<string>>(new Set());
     const [viewMode, setViewMode] = useState<ViewMode>("vencimientos");
     const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
     const [mounted, setMounted] = useState(false);
+
+    const [confirmPoliza, setConfirmPoliza] = useState<Poliza | null>(null);
+    const [editForm, setEditForm] = useState<{ POLIZA: string; VENCIMIENTO: string }>({ POLIZA: "", VENCIMIENTO: "" });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -121,6 +139,39 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                 return next;
             });
         }, 500);
+    };
+
+    const handleDateChange = (date: Date | undefined) => {
+        if (date) {
+            setEditForm((prev) => ({ ...prev, VENCIMIENTO: format(date, "dd/MM/yyyy") }));
+        } else {
+            setEditForm((prev) => ({ ...prev, VENCIMIENTO: "" }));
+        }
+    };
+
+    const handleSaveAndNotify = async () => {
+        if (!confirmPoliza) return;
+        setIsSubmitting(true);
+        try {
+            const result = await updatePolizaFull(confirmPoliza.id || confirmPoliza.CODIGO, {
+                POLIZA: editForm.POLIZA,
+                VENCIMIENTO: editForm.VENCIMIENTO
+            });
+            if (result.success) {
+                const updatedPoliza: Poliza = {
+                    ...confirmPoliza,
+                    POLIZA: editForm.POLIZA,
+                    VENCIMIENTO: editForm.VENCIMIENTO
+                } as Poliza;
+                if (onUpdated) onUpdated(updatedPoliza);
+                handleMarkNotified(updatedPoliza);
+                setConfirmPoliza(null);
+            }
+        } catch (error) {
+            console.error("Error updating poliza:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const getDaysLabel = (days: number) => {
@@ -248,7 +299,10 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                                                     <Button
                                                         size="sm"
                                                         variant={isNotified ? "default" : "outline"}
-                                                        onClick={() => handleMarkNotified(poliza)}
+                                                        onClick={() => {
+                                                            setConfirmPoliza(poliza);
+                                                            setEditForm({ POLIZA: poliza.POLIZA || "", VENCIMIENTO: poliza.VENCIMIENTO || "" });
+                                                        }}
                                                         disabled={isNotified}
                                                         className={`h-7 px-2 gap-1.5 text-[11px] max-w-full transition-colors ${isNotified
                                                             ? "bg-emerald-500 text-white hover:bg-emerald-600 border-none"
@@ -277,6 +331,73 @@ export function AlertsTable({ polizas, allPolizas, loading }: AlertsTableProps) 
                     </div>
                 )}
             </CardContent>
+            <Dialog open={!!confirmPoliza} onOpenChange={(open) => !open && setConfirmPoliza(null)}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Mantenimiento de Póliza</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-2 space-y-4">
+                        <p className="text-sm text-zinc-600">
+                            Has marcado a <span className="font-semibold text-zinc-900">{confirmPoliza?.ASEGURADO}</span>.
+                            ¿Deseás actualizar el número de póliza o la fecha de vencimiento antes de ocultar la alerta mensual?
+                        </p>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-1.5">
+                                <Label className="text-sm">Nro. Póliza</Label>
+                                <Input
+                                    value={editForm.POLIZA}
+                                    onChange={(e) => setEditForm({ ...editForm, POLIZA: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-1.5 flex flex-col pt-1">
+                                <Label className="text-sm">Vencimiento</Label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn(
+                                                "w-full justify-start text-left font-normal",
+                                                !editForm.VENCIMIENTO && "text-zinc-500"
+                                            )}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar mr-2 h-4 w-4"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></svg>
+                                            {editForm.VENCIMIENTO || <span>Elegir</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={editForm.VENCIMIENTO ? new Date(editForm.VENCIMIENTO.split('/').reverse().join('-')) : undefined}
+                                            onSelect={handleDateChange}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-between pt-4">
+                        <Button
+                            variant="outline"
+                            className="w-full sm:w-auto text-zinc-600"
+                            onClick={() => {
+                                if (confirmPoliza) handleMarkNotified(confirmPoliza);
+                                setConfirmPoliza(null);
+                            }}
+                        >
+                            Solo ocultar alerta
+                        </Button>
+                        <Button
+                            disabled={isSubmitting}
+                            onClick={handleSaveAndNotify}
+                            className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+                        >
+                            {isSubmitting ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+                            Actualizar y Ocultar
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </Card>
     );
 }

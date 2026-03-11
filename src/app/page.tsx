@@ -123,6 +123,7 @@ export default function DashboardPage() {
             polizas={expiringPolizas}
             allPolizas={polizas}
             loading={loading}
+            onUpdated={handlePolizaUpdated}
           />
         </section>
 
