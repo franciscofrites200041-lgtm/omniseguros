@@ -100,7 +100,7 @@ export default function DashboardPage() {
                 onClick={() => setIsEditClienteOpen(true)}
               >
                 <UserCog className="h-8 w-8 text-zinc-500" />
-                <span className="text-sm font-semibold text-center leading-tight">Modificar<br />Cliente</span>
+                <span className="text-sm font-semibold text-center leading-tight">Modificar<br />Cliente/Póliza</span>
               </Button>
             </div>
           </div>
