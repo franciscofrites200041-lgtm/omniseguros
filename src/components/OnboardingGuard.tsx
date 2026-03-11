@@ -56,15 +56,12 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
         <>
             {children}
             {needsOnboarding && (
-                <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm pointer-events-auto">
-                    {/* The modal itself is rendered here, forced open */}
-                    <SettingsModal
-                        open={true}
-                        onClose={() => { }}
-                        requireOnboarding={true}
-                        onSaved={handleSaved}
-                    />
-                </div>
+                <SettingsModal
+                    open={true}
+                    onClose={() => { }}
+                    requireOnboarding={true}
+                    onSaved={handleSaved}
+                />
             )}
         </>
     );
