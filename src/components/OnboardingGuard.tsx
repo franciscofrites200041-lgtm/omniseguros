@@ -61,11 +61,33 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
         };
     }, [supabase.auth]);
 
-    const handleSaved = () => {
+    const handleSaved = async () => {
+        // Fetch the updated user profile to get the fresh full_name they just saved
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const fullName = user.user_metadata?.full_name;
+                if (fullName) {
+                    setUserName(fullName);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching updated user profile:", error);
+        }
+
+        // Hide onboarding modal
         setNeedsOnboarding(false);
-        // Despues de guardar por primera vez, tampoco disparamos la bienvenida completa
-        // porque ya estan dentro.
-        sessionStorage.setItem('hasSeenWelcome', 'true');
+
+        // Show welcome banner with a slight delay so the modal has time to fade out nicely
+        setTimeout(() => {
+            setShowWelcome(true);
+            sessionStorage.setItem('hasSeenWelcome', 'true');
+
+            // Auto hide welcome banner after 3 seconds
+            setTimeout(() => {
+                setShowWelcome(false);
+            }, 3000);
+        }, 300);
     };
 
     if (isLoading) {
