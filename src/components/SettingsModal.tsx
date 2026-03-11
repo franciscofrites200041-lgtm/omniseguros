@@ -100,7 +100,7 @@ export function SettingsModal({ open, onClose, requireOnboarding, onSaved }: Set
     return (
         <Dialog open={open} onOpenChange={handleClose}>
             <DialogContent
-                className="sm:max-w-[425px]"
+                className="w-[95vw] sm:max-w-[425px] p-4 sm:p-6"
                 onInteractOutside={(e) => {
                     if (requireOnboarding) e.preventDefault();
                 }}

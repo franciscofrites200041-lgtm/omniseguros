@@ -206,7 +206,7 @@ export function PolizasTable({
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
-                            <Table>
+                            <Table className="w-full min-w-[1000px]">
                                 <TableHeader>
                                     <TableRow className="hover:bg-transparent">
                                         <TableHead className="pl-6 text-xs font-semibold uppercase tracking-wider text-zinc-500">

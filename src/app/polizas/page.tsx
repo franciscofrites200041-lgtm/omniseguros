@@ -33,7 +33,7 @@ export default function PolizasPage() {
         <OnboardingGuard>
             <div className="min-h-screen bg-zinc-50/50">
                 <Header />
-                <main className="px-8 py-8 space-y-6">
+                <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 space-y-6">
                     <div>
                         <Link href="/">
                             <Button variant="outline" className="gap-2 bg-white hover:bg-zinc-100 text-zinc-600">

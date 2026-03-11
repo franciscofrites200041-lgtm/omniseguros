@@ -35,7 +35,7 @@ export function Header() {
     return (
         <>
             <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/80 backdrop-blur-md">
-                <div className="flex h-16 items-center justify-between px-8">
+                <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
                     {/* Left: Logo + Title + Nav */}
                     <div className="flex items-center gap-6">
                         <Sheet>

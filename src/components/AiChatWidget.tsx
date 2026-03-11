@@ -102,7 +102,7 @@ export function AiChatWidget() {
 
             {/* Chat Panel */}
             <div
-                className={`fixed bottom-24 right-6 z-50 w-[380px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl transition-all duration-300 ${isOpen
+                className={`fixed bottom-24 right-6 z-50 w-[calc(100vw-3rem)] sm:w-[380px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl transition-all duration-300 ${isOpen
                     ? "translate-y-0 scale-100 opacity-100"
                     : "pointer-events-none translate-y-4 scale-95 opacity-0"
                     }`}

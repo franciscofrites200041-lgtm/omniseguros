@@ -11,7 +11,7 @@ export function CotizadorCard() {
             <div className="absolute -top-32 -right-32 w-64 h-64 bg-[#59CBE8] rounded-full mix-blend-screen filter blur-[100px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
             <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-indigo-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
 
-            <CardContent className="p-10 flex flex-col justify-between h-full min-h-[420px] relative z-10">
+            <CardContent className="p-6 lg:p-10 flex flex-col justify-between h-full min-h-[420px] lg:min-h-[420px] relative z-10">
                 {/* Logo Area */}
                 <div className="flex-1 flex flex-col justify-center items-center w-full min-h-[140px] transform group-hover:scale-[1.02] transition-transform duration-500 text-center">
                     <h2 className="text-[2.5rem] md:text-[3.5rem] leading-none font-black tracking-[-0.04em] text-transparent bg-clip-text bg-linear-to-r from-white via-indigo-50 to-[#59CBE8] drop-shadow-sm">

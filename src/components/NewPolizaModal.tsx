@@ -106,7 +106,7 @@ export function NewPolizaModal({
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[640px]">
+            <DialogContent className="max-h-[90vh] overflow-y-auto w-[95vw] sm:max-w-[640px] p-4 sm:p-6">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-zinc-900">
                         <Plus className="h-5 w-5 text-blue-600" />

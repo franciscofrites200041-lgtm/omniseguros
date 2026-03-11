@@ -65,7 +65,7 @@ export default function DashboardPage() {
       <div className="min-h-screen bg-zinc-50/50">
         <Header />
 
-        <main className="grid gap-8 px-8 py-8 lg:grid-cols-3">
+        <main className="grid grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-3 lg:gap-8 lg:px-8 lg:py-8">
           {/* KPI Cards & Navbar (Izquierda) */}
           <section className="lg:col-span-1">
             <div className="flex flex-col items-center gap-6 h-full">
