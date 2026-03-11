@@ -89,8 +89,8 @@ export function AiChatWidget() {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-105 ${isOpen
-                        ? "rotate-0 bg-zinc-800 text-white"
-                        : "bg-blue-600 text-white hover:bg-blue-700"
+                    ? "rotate-0 bg-zinc-800 text-white"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
                     }`}
             >
                 {isOpen ? (
@@ -103,8 +103,8 @@ export function AiChatWidget() {
             {/* Chat Panel */}
             <div
                 className={`fixed bottom-24 right-6 z-50 w-[380px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl transition-all duration-300 ${isOpen
-                        ? "translate-y-0 scale-100 opacity-100"
-                        : "pointer-events-none translate-y-4 scale-95 opacity-0"
+                    ? "translate-y-0 scale-100 opacity-100"
+                    : "pointer-events-none translate-y-4 scale-95 opacity-0"
                     }`}
             >
                 {/* Chat Header */}
@@ -133,8 +133,8 @@ export function AiChatWidget() {
                             >
                                 <div
                                     className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${msg.role === "user"
-                                            ? "bg-blue-100 text-blue-600"
-                                            : "bg-zinc-100 text-zinc-500"
+                                        ? "bg-blue-100 text-blue-600"
+                                        : "bg-zinc-100 text-zinc-500"
                                         }`}
                                 >
                                     {msg.role === "user" ? (
@@ -145,11 +145,23 @@ export function AiChatWidget() {
                                 </div>
                                 <div
                                     className={`max-w-[260px] rounded-2xl px-3.5 py-2.5 ${msg.role === "user"
-                                            ? "bg-blue-600 text-white"
-                                            : "bg-zinc-100 text-zinc-800"
+                                        ? "bg-blue-600 text-white"
+                                        : "bg-zinc-100 text-zinc-800"
                                         }`}
                                 >
-                                    <p className="text-[13px] leading-relaxed">{msg.content}</p>
+                                    <div className="text-[13px] leading-relaxed">
+                                        {msg.role === "assistant" ? (
+                                            msg.content.replace(/(?<!\n)(?=\d+\.\s+\*\*)/g, '\n').split('\n').map((line, i) => (
+                                                <span key={i} className={i !== 0 ? "block mt-2" : ""}>
+                                                    {line.split('**').map((part, j) => (
+                                                        j % 2 === 1 ? <strong key={j} className="font-semibold text-zinc-900">{part}</strong> : <span key={j}>{part}</span>
+                                                    ))}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            msg.content
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
