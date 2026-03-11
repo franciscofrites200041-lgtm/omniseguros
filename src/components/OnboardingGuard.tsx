@@ -12,6 +12,8 @@ interface OnboardingGuardProps {
 export function OnboardingGuard({ children }: OnboardingGuardProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [needsOnboarding, setNeedsOnboarding] = useState(false);
+    const [showWelcome, setShowWelcome] = useState(false);
+    const [userName, setUserName] = useState("");
     const supabase = createClient();
 
     useEffect(() => {
@@ -21,9 +23,24 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user && mounted) {
-                    // Check if the user has a full_name set
-                    if (!user.user_metadata?.full_name || user.user_metadata.full_name.trim() === "") {
+                    const fullName = user.user_metadata?.full_name;
+                    if (!fullName || fullName.trim() === "") {
                         setNeedsOnboarding(true);
+                    } else {
+                        // El usuario ya tiene nombre
+                        setUserName(fullName);
+
+                        // Solo mostramos el cartel de bienvenida en la primera carga si viene del login
+                        // usando sessionStorage para no mostrarlo en cada refresco F5.
+                        const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
+                        if (!hasSeenWelcome) {
+                            setShowWelcome(true);
+                            sessionStorage.setItem('hasSeenWelcome', 'true');
+
+                            setTimeout(() => {
+                                if (mounted) setShowWelcome(false);
+                            }, 2500); // El cartel dura 2.5 segundos
+                        }
                     }
                 }
             } catch (error) {
@@ -42,6 +59,9 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
 
     const handleSaved = () => {
         setNeedsOnboarding(false);
+        // Despues de guardar por primera vez, tampoco disparamos la bienvenida completa
+        // porque ya estan dentro.
+        sessionStorage.setItem('hasSeenWelcome', 'true');
     };
 
     if (isLoading) {
@@ -55,6 +75,7 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
     return (
         <>
             {children}
+
             {needsOnboarding && (
                 <SettingsModal
                     open={true}
@@ -63,6 +84,23 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
                     onSaved={handleSaved}
                 />
             )}
+
+            {/* Pantalla de Bienvenida */}
+            <div
+                className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/40 backdrop-blur-md text-white transition-opacity duration-700 pointer-events-none ${showWelcome ? "opacity-100" : "opacity-0"
+                    }`}
+            >
+                {/* Usamos un truco con pointer-events para que mientras sea invisible (opacity 0) no bloquee clics, 
+                    y aunque visible tampoco los bloquee demasiado, pero dura solo 2 segundos. */}
+                <div className={`transform transition-all duration-700 ${showWelcome ? "translate-y-0 scale-100" : "translate-y-8 scale-95"}`}>
+                    <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-center drop-shadow-lg">
+                        ¡Bienvenido, {userName.split(' ')[0]}!
+                    </h2>
+                    <p className="mt-4 text-center text-zinc-200 text-lg font-medium drop-shadow-md">
+                        Preparando tu OmniSeguros...
+                    </p>
+                </div>
+            </div>
         </>
     );
 }
