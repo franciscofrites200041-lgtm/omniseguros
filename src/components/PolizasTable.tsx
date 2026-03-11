@@ -137,7 +137,7 @@ export function PolizasTable({
                         </div>
                         <Button
                             onClick={() => setShowNewModal(true)}
-                            className="gap-2 bg-blue-600 hover:bg-blue-700"
+                            className="w-full sm:w-auto gap-2 bg-blue-600 hover:bg-blue-700"
                         >
                             <Plus className="h-4 w-4" />
                             Nuevo Cliente
@@ -155,14 +155,14 @@ export function PolizasTable({
                                 className="pl-9"
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <div className="flex items-center gap-1.5">
-                                <Filter className="h-3.5 w-3.5 text-zinc-400" />
+                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                            <div className="flex items-center gap-1.5 w-full sm:w-auto">
+                                <Filter className="h-3.5 w-3.5 text-zinc-400 shrink-0 hidden sm:block" />
                                 <Select
                                     value={filterEstado}
                                     onValueChange={setFilterEstado}
                                 >
-                                    <SelectTrigger className="w-[140px]">
+                                    <SelectTrigger className="w-full sm:w-[140px]">
                                         <SelectValue placeholder="Estado" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -177,7 +177,7 @@ export function PolizasTable({
                                 value={filterCompania}
                                 onValueChange={setFilterCompania}
                             >
-                                <SelectTrigger className="w-[180px]">
+                                <SelectTrigger className="w-full sm:w-[180px]">
                                     <SelectValue placeholder="Compañía" />
                                 </SelectTrigger>
                                 <SelectContent>
