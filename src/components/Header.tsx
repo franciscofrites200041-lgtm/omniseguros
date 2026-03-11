@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { Activity, Wifi, LayoutDashboard, ClipboardList, BarChart2, Menu, Plus, UserCog, UploadCloud, LogOut } from "lucide-react";
+import { Activity, Wifi, LayoutDashboard, ClipboardList, BarChart2, Menu, Plus, UserCog, UploadCloud, LogOut, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MetricsModal } from "@/components/MetricsModal";
 import { NewPolizaModal } from "@/components/NewPolizaModal";
+import { SettingsModal } from "@/components/SettingsModal";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { createClient } from "@/utils/supabase/client";
@@ -15,6 +16,7 @@ export function Header() {
     const pathname = usePathname();
     const router = useRouter();
     const [isNewPolizaOpen, setIsNewPolizaOpen] = useState(false);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const handleLogout = async () => {
         const supabase = createClient();
@@ -90,6 +92,15 @@ export function Header() {
                                         <span className="text-sm font-semibold">Modificar Cliente</span>
                                     </Button>
 
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full justify-start gap-4 h-12 hover:bg-zinc-100 text-zinc-700"
+                                        onClick={() => setIsSettingsOpen(true)}
+                                    >
+                                        <Settings className="h-5 w-5 text-zinc-500" />
+                                        <span className="text-sm font-semibold">Configuración</span>
+                                    </Button>
+
                                     <div className="border-t border-zinc-100 mt-4 pt-4">
                                         <Button
                                             variant="ghost"
@@ -133,6 +144,10 @@ export function Header() {
                 open={isNewPolizaOpen}
                 onClose={() => setIsNewPolizaOpen(false)}
                 onCreated={() => { window.location.reload(); }}
+            />
+            <SettingsModal
+                open={isSettingsOpen}
+                onClose={() => setIsSettingsOpen(false)}
             />
         </>
     );

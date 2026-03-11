@@ -9,6 +9,7 @@ import { AiChatWidget } from "@/components/AiChatWidget";
 import { MetricsModal } from "@/components/MetricsModal";
 import { NewPolizaModal } from "@/components/NewPolizaModal";
 import { EditClienteModal } from "@/components/EditClienteModal";
+import { OnboardingGuard } from "@/components/OnboardingGuard";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ClipboardList, BarChart2, Plus, UserCog } from "lucide-react";
@@ -60,81 +61,84 @@ export default function DashboardPage() {
   const expiringPolizas = loading ? [] : getExpiringPolizas(polizas, 30);
 
   return (
-    <div className="min-h-screen bg-zinc-50/50">
-      <Header />
+    <OnboardingGuard>
+      <div className="min-h-screen bg-zinc-50/50">
+        <Header />
 
-      <main className="grid gap-8 px-8 py-8 lg:grid-cols-3">
-        {/* KPI Cards & Navbar (Izquierda) */}
-        <section className="lg:col-span-1">
-          <div className="flex flex-col items-center gap-6 h-full">
-            <KpiCards data={kpis} loading={loading} />
+        <main className="grid gap-8 px-8 py-8 lg:grid-cols-3">
+          {/* KPI Cards & Navbar (Izquierda) */}
+          <section className="lg:col-span-1">
+            <div className="flex flex-col items-center gap-6 h-full">
+              <KpiCards data={kpis} loading={loading} />
 
-            {/* Nav Buttons */}
-            <div className="grid grid-cols-2 gap-3 w-full flex-grow pb-1">
-              <Link href="/polizas" className="w-full h-full">
-                <Button variant="outline" className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
-                  <ClipboardList className="h-8 w-8 text-zinc-500" />
-                  <span className="text-sm font-semibold">Pólizas</span>
+              {/* Nav Buttons */}
+              <div className="grid grid-cols-2 gap-3 w-full flex-grow pb-1">
+                <Link href="/polizas" className="w-full h-full">
+                  <Button variant="outline" className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
+                    <ClipboardList className="h-8 w-8 text-zinc-500" />
+                    <span className="text-sm font-semibold">Pólizas</span>
+                  </Button>
+                </Link>
+
+                <MetricsModal>
+                  <Button variant="outline" className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
+                    <BarChart2 className="h-8 w-8 text-zinc-500" />
+                    <span className="text-sm font-semibold">Métricas</span>
+                  </Button>
+                </MetricsModal>
+
+                <Button
+                  variant="outline"
+                  className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md"
+                  onClick={() => setIsNewPolizaOpen(true)}
+                >
+                  <Plus className="h-8 w-8 text-zinc-500" />
+                  <span className="text-sm font-semibold">Nueva Póliza</span>
                 </Button>
-              </Link>
 
-              <MetricsModal>
-                <Button variant="outline" className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
-                  <BarChart2 className="h-8 w-8 text-zinc-500" />
-                  <span className="text-sm font-semibold">Métricas</span>
+                <Button
+                  variant="outline"
+                  className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md"
+                  onClick={() => setIsEditClienteOpen(true)}
+                >
+                  <UserCog className="h-8 w-8 text-zinc-500" />
+                  <span className="text-sm font-semibold text-center leading-tight">Modificar<br />Cliente/Póliza</span>
                 </Button>
-              </MetricsModal>
-
-              <Button
-                variant="outline"
-                className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md"
-                onClick={() => setIsNewPolizaOpen(true)}
-              >
-                <Plus className="h-8 w-8 text-zinc-500" />
-                <span className="text-sm font-semibold">Nueva Póliza</span>
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md"
-                onClick={() => setIsEditClienteOpen(true)}
-              >
-                <UserCog className="h-8 w-8 text-zinc-500" />
-                <span className="text-sm font-semibold text-center leading-tight">Modificar<br />Cliente/Póliza</span>
-              </Button>
+              </div>
             </div>
-          </div>
-          <NewPolizaModal
-            open={isNewPolizaOpen}
-            onClose={() => setIsNewPolizaOpen(false)}
-            onCreated={handlePolizaCreated}
-          />
-          <EditClienteModal
-            open={isEditClienteOpen}
-            onClose={() => setIsEditClienteOpen(false)}
-            polizas={polizas}
-            onUpdated={handlePolizaUpdated}
-          />
-        </section>
 
-        {/* Alerts (Centro) */}
-        <section className="lg:col-span-1">
-          <AlertsTable
-            polizas={expiringPolizas}
-            allPolizas={polizas}
-            loading={loading}
-            onUpdated={handlePolizaUpdated}
-          />
-        </section>
+            <NewPolizaModal
+              open={isNewPolizaOpen}
+              onClose={() => setIsNewPolizaOpen(false)}
+              onCreated={handlePolizaCreated}
+            />
+            <EditClienteModal
+              open={isEditClienteOpen}
+              onClose={() => setIsEditClienteOpen(false)}
+              polizas={polizas}
+              onUpdated={handlePolizaUpdated}
+            />
+          </section>
 
-        {/* Cotizador (Derecha) */}
-        <section className="lg:col-span-1">
-          <CotizadorCard />
-        </section>
-      </main>
+          {/* Alerts (Centro) */}
+          <section className="lg:col-span-1">
+            <AlertsTable
+              polizas={expiringPolizas}
+              allPolizas={polizas}
+              loading={loading}
+              onUpdated={handlePolizaUpdated}
+            />
+          </section>
 
-      {/* Floating AI Chat */}
-      <AiChatWidget />
-    </div>
+          {/* Cotizador (Derecha) */}
+          <section className="lg:col-span-1">
+            <CotizadorCard />
+          </section>
+        </main>
+
+        {/* Floating AI Chat */}
+        <AiChatWidget />
+      </div>
+    </OnboardingGuard>
   );
 }
