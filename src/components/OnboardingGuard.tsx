@@ -34,12 +34,16 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
                         // usando sessionStorage para no mostrarlo en cada refresco F5.
                         const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
                         if (!hasSeenWelcome) {
-                            setShowWelcome(true);
                             sessionStorage.setItem('hasSeenWelcome', 'true');
+
+                            // Let the DOM mount with opacity-0 first, then trigger fade-in
+                            setTimeout(() => {
+                                if (mounted) setShowWelcome(true);
+                            }, 100);
 
                             setTimeout(() => {
                                 if (mounted) setShowWelcome(false);
-                            }, 2500); // El cartel dura 2.5 segundos
+                            }, 3100); // 3 seconds after fade-in starts
                         }
                     }
                 }
@@ -87,17 +91,17 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
 
             {/* Pantalla de Bienvenida */}
             <div
-                className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/40 backdrop-blur-md text-white transition-opacity duration-700 pointer-events-none ${showWelcome ? "opacity-100" : "opacity-0"
+                className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/40 backdrop-blur-md text-white transition-opacity duration-1000 pointer-events-none ${showWelcome ? "opacity-100" : "opacity-0"
                     }`}
             >
                 {/* Usamos un truco con pointer-events para que mientras sea invisible (opacity 0) no bloquee clics, 
-                    y aunque visible tampoco los bloquee demasiado, pero dura solo 2 segundos. */}
-                <div className={`transform transition-all duration-700 ${showWelcome ? "translate-y-0 scale-100" : "translate-y-8 scale-95"}`}>
+                    y aunque visible tampoco los bloquee demasiado, pero dura solo 3 segundos. */}
+                <div className={`transform transition-all duration-1000 ${showWelcome ? "translate-y-0 scale-100" : "translate-y-8 scale-95"}`}>
                     <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-center drop-shadow-lg">
                         ¡Bienvenido, {userName.split(' ')[0]}!
                     </h2>
                     <p className="mt-4 text-center text-zinc-200 text-lg font-medium drop-shadow-md">
-                        Preparando tu OmniSeguros...
+                        Preparando tu interfaz...
                     </p>
                 </div>
             </div>
