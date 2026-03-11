@@ -50,17 +50,22 @@ export function EditClienteModal({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitResult, setSubmitResult] = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
-    // Filtrado simple por nombre o numero de poliza
+    // Buscador avanzado: normaliza acentos y permite buscar en orden indistinto
     const filteredPolizas = useMemo(() => {
         if (!searchTerm.trim()) return [];
-        const term = searchTerm.toLowerCase();
+
+        const normalize = (str: string) =>
+            (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+
+        const searchTerms = normalize(searchTerm).split(/\s+/);
+
         return polizas
-            .filter(
-                (p) =>
-                    p.ASEGURADO?.toLowerCase().includes(term) ||
-                    p.POLIZA?.toLowerCase().includes(term)
-            )
-            .slice(0, 10); // Mostrar maximo 10 resultados para no saturar
+            .filter((p) => {
+                const searchString = normalize(`${p.ASEGURADO} ${p.POLIZA} ${p.COMPAÑIA}`);
+                // Todos los términos ingresados deben existir en el string del cliente
+                return searchTerms.every(term => searchString.includes(term));
+            })
+            .slice(0, 10);
     }, [searchTerm, polizas]);
 
     const handleSelect = (poliza: Poliza) => {
