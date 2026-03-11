@@ -75,6 +75,13 @@ export function EditClienteModal({
         setSubmitResult(null);
     };
 
+    const otherPolizasForClient = useMemo(() => {
+        if (!selectedPoliza || !selectedPoliza.ASEGURADO) return [];
+        return polizas.filter(
+            (p) => p.ASEGURADO === selectedPoliza.ASEGURADO && (p.id ? p.id !== selectedPoliza.id : p.CODIGO !== selectedPoliza.CODIGO)
+        );
+    }, [selectedPoliza, polizas]);
+
     const handleChange = (field: keyof Poliza, value: string) => {
         setForm((prev) => ({ ...prev, [field]: value }));
         setSubmitResult(null);
@@ -394,6 +401,34 @@ export function EditClienteModal({
                                 rows={3}
                             />
                         </div>
+
+                        {/* Otras Pólizas del Cliente */}
+                        {otherPolizasForClient.length > 0 && (
+                            <div className="pt-2">
+                                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                                    Otras Pólizas del Cliente
+                                </p>
+                                <div className="grid gap-2">
+                                    {otherPolizasForClient.map((otherP) => (
+                                        <div key={otherP.CODIGO} className="flex items-center justify-between p-3 rounded-md border border-zinc-200 bg-zinc-50/50">
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-semibold text-zinc-900">{otherP.COMPAÑIA}</span>
+                                                <span className="text-xs text-zinc-500">Póliza: {otherP.POLIZA} {otherP.COBERTURA ? `• ${otherP.COBERTURA}` : ''}</span>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleSelect(otherP)}
+                                                className="text-xs h-7 text-blue-600 border-blue-200 hover:bg-blue-50"
+                                            >
+                                                Modificar
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Mensaje de resultado (Feedback) */}
                         {submitResult && (
