@@ -66,62 +66,78 @@ export default function DashboardPage() {
         <Header />
 
         <main className="grid grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-3 lg:gap-8 lg:px-8 lg:py-8">
-          {/* KPI Cards & Navbar (Izquierda) */}
-          <section className="lg:col-span-1">
-            <div className="flex flex-col items-center gap-6 h-full">
-              <KpiCards data={kpis} loading={loading} />
+          {/* Left & Center: KPI + Buttons (Top) & Alerts (Bottom) */}
+          <section className="lg:col-span-2 flex flex-col gap-6">
+            
+            {/* Top Row: KPI card + 3x2 Nav Buttons */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              {/* KPI Card (1/3 width) */}
+              <div className="md:col-span-1 flex flex-col h-full">
+                <KpiCards data={kpis} loading={loading} />
+              </div>
 
-              {/* Nav Buttons */}
-              <div className="grid grid-cols-2 gap-3 w-full flex-grow pb-1">
-                <Link href="/polizas" className="w-full h-full">
-                  <Button variant="outline" className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
-                    <ClipboardList className="h-8 w-8 text-zinc-500" />
-                    <span className="text-sm font-semibold">Pólizas</span>
+              {/* Nav Buttons (2/3 width, 3 columns x 2 rows, smaller padding) */}
+              <div className="md:col-span-2 grid grid-cols-3 gap-3">
+                <Link href="/polizas" className="w-full">
+                  <Button variant="outline" className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
+                    <ClipboardList className="h-6 w-6 text-zinc-500" />
+                    <span className="text-xs font-semibold">Pólizas</span>
                   </Button>
                 </Link>
 
                 <MetricsModal>
-                  <Button variant="outline" className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
-                    <BarChart2 className="h-8 w-8 text-zinc-500" />
-                    <span className="text-sm font-semibold">Métricas</span>
+                  <Button variant="outline" className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
+                    <BarChart2 className="h-6 w-6 text-zinc-500" />
+                    <span className="text-xs font-semibold">Métricas</span>
                   </Button>
                 </MetricsModal>
 
-                {/* Fila 2: Cotizaciones + Siniestros */}
-                <Link href="/cotizaciones" className="w-full h-full">
-                  <Button variant="outline" className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
-                    <FileText className="h-8 w-8 text-zinc-500" />
-                    <span className="text-sm font-semibold">Cotizaciones</span>
+                <Link href="/cotizaciones" className="w-full">
+                  <Button variant="outline" className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
+                    <FileText className="h-6 w-6 text-zinc-500" />
+                    <span className="text-xs font-semibold">Cotizaciones</span>
                   </Button>
                 </Link>
 
-                <Link href="/siniestros" className="w-full h-full">
-                  <Button variant="outline" className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
-                    <ShieldAlert className="h-8 w-8 text-zinc-500" />
-                    <span className="text-sm font-semibold">Siniestros</span>
+                <Link href="/siniestros" className="w-full">
+                  <Button variant="outline" className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
+                    <ShieldAlert className="h-6 w-6 text-zinc-500" />
+                    <span className="text-xs font-semibold">Siniestros</span>
                   </Button>
                 </Link>
 
                 <Button
                   variant="outline"
-                  className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md"
+                  className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md"
                   onClick={() => setIsNewPolizaOpen(true)}
                 >
-                  <Plus className="h-8 w-8 text-zinc-500" />
-                  <span className="text-sm font-semibold">Nueva Póliza</span>
+                  <Plus className="h-6 w-6 text-zinc-500" />
+                  <span className="text-xs font-semibold">Nueva Póliza</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md"
+                  className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md p-1"
                   onClick={() => setIsEditClienteOpen(true)}
                 >
-                  <UserCog className="h-8 w-8 text-zinc-500" />
-                  <span className="text-sm font-semibold text-center leading-tight">Modificar<br />Cliente/Póliza</span>
+                  <UserCog className="h-6 w-6 text-zinc-500" />
+                  <span className="text-xs font-semibold text-center leading-tight">Modificar<br />Cliente/Póliza</span>
                 </Button>
               </div>
             </div>
 
+            {/* Bottom Row: Alerts Table (full width of the 2 columns) */}
+            <div className="w-full flex-grow">
+              <AlertsTable
+                polizas={expiringPolizas}
+                allPolizas={polizas}
+                loading={loading}
+                onUpdated={handlePolizaUpdated}
+              />
+            </div>
+
+            {/* Modals placed here alongside their triggers */}
             <NewPolizaModal
               open={isNewPolizaOpen}
               onClose={() => setIsNewPolizaOpen(false)}
@@ -131,16 +147,6 @@ export default function DashboardPage() {
               open={isEditClienteOpen}
               onClose={() => setIsEditClienteOpen(false)}
               polizas={polizas}
-              onUpdated={handlePolizaUpdated}
-            />
-          </section>
-
-          {/* Alerts (Centro) */}
-          <section className="lg:col-span-1">
-            <AlertsTable
-              polizas={expiringPolizas}
-              allPolizas={polizas}
-              loading={loading}
               onUpdated={handlePolizaUpdated}
             />
           </section>
