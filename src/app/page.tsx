@@ -73,12 +73,12 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
               {/* KPI Card (1/3 width) */}
-              <div className="md:col-span-1 flex flex-col h-full">
+              <div className="md:col-span-1">
                 <KpiCards data={kpis} loading={loading} />
               </div>
 
               {/* Nav Buttons (2/3 width, 3 columns x 2 rows, matches KPI height) */}
-              <div className="md:col-span-2 grid grid-cols-3 grid-rows-2 gap-3 h-full">
+              <div className="md:col-span-2 grid grid-cols-3 grid-rows-2 gap-3">
                 <Link href="/polizas" className="w-full h-full">
                   <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-[#59CBE8]/5 text-zinc-600 bg-gradient-to-br from-white to-[#59CBE8]/10 border-[#59CBE8]/20 shadow-sm transition-all hover:shadow-md py-2 group">
                     <ClipboardList className="h-5 w-5 text-zinc-500 group-hover:text-[#59CBE8] transition-colors" />
