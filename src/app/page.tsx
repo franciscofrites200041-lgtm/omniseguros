@@ -77,52 +77,52 @@ export default function DashboardPage() {
                 <KpiCards data={kpis} loading={loading} />
               </div>
 
-              {/* Nav Buttons (2/3 width, 3 columns x 2 rows, smaller padding) */}
-              <div className="md:col-span-2 grid grid-cols-3 gap-3">
-                <Link href="/polizas" className="w-full">
-                  <Button variant="outline" className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
-                    <ClipboardList className="h-6 w-6 text-zinc-500" />
+              {/* Nav Buttons (2/3 width, 3 columns x 2 rows, matches KPI height) */}
+              <div className="md:col-span-2 grid grid-cols-3 grid-rows-2 gap-3 h-full">
+                <Link href="/polizas" className="w-full h-full">
+                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md py-2">
+                    <ClipboardList className="h-5 w-5 text-zinc-500" />
                     <span className="text-xs font-semibold">Pólizas</span>
                   </Button>
                 </Link>
 
                 <MetricsModal>
-                  <Button variant="outline" className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
-                    <BarChart2 className="h-6 w-6 text-zinc-500" />
+                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md py-2">
+                    <BarChart2 className="h-5 w-5 text-zinc-500" />
                     <span className="text-xs font-semibold">Métricas</span>
                   </Button>
                 </MetricsModal>
 
-                <Link href="/cotizaciones" className="w-full">
-                  <Button variant="outline" className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
-                    <FileText className="h-6 w-6 text-zinc-500" />
+                <Link href="/cotizaciones" className="w-full h-full">
+                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md py-2">
+                    <FileText className="h-5 w-5 text-zinc-500" />
                     <span className="text-xs font-semibold">Cotizaciones</span>
                   </Button>
                 </Link>
 
-                <Link href="/siniestros" className="w-full">
-                  <Button variant="outline" className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
-                    <ShieldAlert className="h-6 w-6 text-zinc-500" />
+                <Link href="/siniestros" className="w-full h-full">
+                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md py-2">
+                    <ShieldAlert className="h-5 w-5 text-zinc-500" />
                     <span className="text-xs font-semibold">Siniestros</span>
                   </Button>
                 </Link>
 
                 <Button
                   variant="outline"
-                  className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md"
+                  className="w-full h-full flex-col gap-1.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md py-2"
                   onClick={() => setIsNewPolizaOpen(true)}
                 >
-                  <Plus className="h-6 w-6 text-zinc-500" />
+                  <Plus className="h-5 w-5 text-zinc-500" />
                   <span className="text-xs font-semibold">Nueva Póliza</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="w-full h-24 flex-col gap-2 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md p-1"
+                  className="w-full h-full flex-col gap-1 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md px-1 py-1"
                   onClick={() => setIsEditClienteOpen(true)}
                 >
-                  <UserCog className="h-6 w-6 text-zinc-500" />
-                  <span className="text-xs font-semibold text-center leading-tight">Modificar<br />Cliente/Póliza</span>
+                  <UserCog className="h-5 w-5 text-zinc-500" />
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-center leading-tight">Modificar<br />Cliente/Póliza</span>
                 </Button>
               </div>
             </div>

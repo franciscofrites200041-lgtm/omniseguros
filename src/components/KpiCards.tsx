@@ -52,9 +52,9 @@ export function KpiCards({ data, loading }: KpiCardsProps) {
 
     return (
         <Card
-            className={`w-full relative overflow-hidden border-zinc-200 border-l-4 ${kpi.borderColor} transition-shadow hover:shadow-md`}
+            className={`w-full h-full relative overflow-hidden border-zinc-200 border-l-4 ${kpi.borderColor} transition-shadow hover:shadow-md`}
         >
-            <CardContent className="p-6">
+            <CardContent className="p-6 flex flex-col justify-center h-full">
                 <div className="flex items-start justify-between">
                     <div className="space-y-1">
                         <p className="text-sm font-medium text-zinc-500">
