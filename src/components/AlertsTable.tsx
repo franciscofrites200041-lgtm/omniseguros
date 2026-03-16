@@ -69,12 +69,12 @@ function TableSkeleton() {
         <div className="space-y-4 p-6">
             {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex animate-pulse items-center gap-4">
-                    <div className="h-6 w-20 rounded bg-zinc-200" />
-                    <div className="h-6 w-40 rounded bg-zinc-200" />
-                    <div className="h-6 w-28 rounded bg-zinc-200" />
-                    <div className="h-6 w-32 rounded bg-zinc-200" />
-                    <div className="h-6 w-24 rounded bg-zinc-200" />
-                    <div className="ml-auto h-9 w-24 rounded bg-zinc-200" />
+                    <div className="h-6 w-20 rounded bg-[#59CBE8]/10" />
+                    <div className="h-6 w-40 rounded bg-[#59CBE8]/10" />
+                    <div className="h-6 w-28 rounded bg-[#59CBE8]/10" />
+                    <div className="h-6 w-32 rounded bg-[#59CBE8]/10" />
+                    <div className="h-6 w-24 rounded bg-[#59CBE8]/10" />
+                    <div className="ml-auto h-9 w-24 rounded bg-[#59CBE8]/10" />
                 </div>
             ))}
         </div>
@@ -191,40 +191,42 @@ export function AlertsTable({ polizas, allPolizas, loading, onUpdated }: AlertsT
     };
 
     return (
-        <Card className="border-zinc-200">
+        <Card className="border-[#59CBE8]/30 bg-white/50 backdrop-blur-sm shadow-sm transition-all duration-500 hover:shadow-md">
             <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <Clock className="h-5 w-5 text-amber-500" />
+                        <div className="p-2 rounded-full bg-[#59CBE8]/10">
+                            <Clock className="h-4 w-4 text-[#59CBE8]" />
+                        </div>
 
                         {/* Dropdown to switch view mode */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <button className="flex items-center gap-1.5 rounded-md px-1 py-0.5 text-base font-semibold text-zinc-900 transition-colors hover:bg-zinc-100">
+                                <button className="flex items-center gap-1.5 rounded-md px-1 py-0.5 text-base font-semibold text-zinc-900 transition-colors hover:text-[#59CBE8] hover:bg-[#59CBE8]/5">
                                     {labels.title}
-                                    <ChevronDown className="h-4 w-4 text-zinc-400" />
+                                    <ChevronDown className="h-4 w-4 text-zinc-400 group-hover:text-[#59CBE8]" />
                                 </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start">
+                            <DropdownMenuContent align="start" className="border-[#59CBE8]/20">
                                 <DropdownMenuItem
                                     onClick={() => setViewMode("vencimientos")}
-                                    className={`gap-2 ${viewMode === "vencimientos" ? "font-semibold" : ""}`}
+                                    className={`gap-2 focus:bg-[#59CBE8]/10 focus:text-[#59CBE8] ${viewMode === "vencimientos" ? "font-bold text-[#59CBE8]" : ""}`}
                                 >
-                                    <Clock className="h-4 w-4 text-amber-500" />
+                                    <Clock className="h-4 w-4" />
                                     Alertas de Vencimiento
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => setViewMode("impagas")}
-                                    className={`gap-2 ${viewMode === "impagas" ? "font-semibold" : ""}`}
+                                    className={`gap-2 focus:bg-[#59CBE8]/10 focus:text-[#59CBE8] ${viewMode === "impagas" ? "font-bold text-[#59CBE8]" : ""}`}
                                 >
-                                    <AlertCircle className="h-4 w-4 text-red-500" />
+                                    <AlertCircle className="h-4 w-4" />
                                     Pólizas Impagas
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
 
-                    <Badge variant="secondary" className="text-xs">
+                    <Badge variant="outline" className="text-[10px] font-bold border-[#59CBE8]/30 bg-[#59CBE8]/5 text-[#59CBE8] uppercase tracking-wider">
                         {labels.badge} · {displayData.length}
                     </Badge>
                 </div>
@@ -268,7 +270,7 @@ export function AlertsTable({ polizas, allPolizas, loading, onUpdated }: AlertsT
                                     return (
                                         <TableRow
                                             key={id}
-                                            className={`group transition-all duration-500 ease-in-out hover:bg-zinc-50/50 ${isNotified ? "opacity-0 translate-x-8" : "opacity-100 translate-x-0"
+                                            className={`group transition-all duration-500 ease-in-out hover:bg-[#59CBE8]/5 ${isNotified ? "opacity-0 translate-x-8" : "opacity-100 translate-x-0"
                                                 }`}
                                         >
                                             <TableCell className="pl-4 py-3 align-top">
