@@ -80,48 +80,48 @@ export default function DashboardPage() {
               {/* Nav Buttons (2/3 width, 3 columns x 2 rows, matches KPI height) */}
               <div className="md:col-span-2 grid grid-cols-3 grid-rows-2 gap-3 h-full">
                 <Link href="/polizas" className="w-full h-full">
-                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md py-2">
-                    <ClipboardList className="h-5 w-5 text-zinc-500" />
+                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-[#59CBE8]/5 text-zinc-600 bg-gradient-to-br from-white to-[#59CBE8]/10 border-[#59CBE8]/20 shadow-sm transition-all hover:shadow-md py-2 group">
+                    <ClipboardList className="h-5 w-5 text-zinc-500 group-hover:text-[#59CBE8] transition-colors" />
                     <span className="text-xs font-semibold">Pólizas</span>
                   </Button>
                 </Link>
 
                 <MetricsModal>
-                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md py-2">
-                    <BarChart2 className="h-5 w-5 text-zinc-500" />
+                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-[#59CBE8]/5 text-zinc-600 bg-gradient-to-br from-white to-[#59CBE8]/10 border-[#59CBE8]/20 shadow-sm transition-all hover:shadow-md py-2 group">
+                    <BarChart2 className="h-5 w-5 text-zinc-500 group-hover:text-[#59CBE8] transition-colors" />
                     <span className="text-xs font-semibold">Métricas</span>
                   </Button>
                 </MetricsModal>
 
                 <Link href="/cotizaciones" className="w-full h-full">
-                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md py-2">
-                    <FileText className="h-5 w-5 text-zinc-500" />
+                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-[#59CBE8]/5 text-zinc-600 bg-gradient-to-br from-white to-[#59CBE8]/10 border-[#59CBE8]/20 shadow-sm transition-all hover:shadow-md py-2 group">
+                    <FileText className="h-5 w-5 text-zinc-500 group-hover:text-[#59CBE8] transition-colors" />
                     <span className="text-xs font-semibold">Cotizaciones</span>
                   </Button>
                 </Link>
 
                 <Link href="/siniestros" className="w-full h-full">
-                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md py-2">
-                    <ShieldAlert className="h-5 w-5 text-zinc-500" />
+                  <Button variant="outline" className="w-full h-full flex-col gap-1.5 hover:bg-[#59CBE8]/5 text-zinc-600 bg-gradient-to-br from-white to-[#59CBE8]/10 border-[#59CBE8]/20 shadow-sm transition-all hover:shadow-md py-2 group">
+                    <ShieldAlert className="h-5 w-5 text-zinc-500 group-hover:text-[#59CBE8] transition-colors" />
                     <span className="text-xs font-semibold">Siniestros</span>
                   </Button>
                 </Link>
 
                 <Button
                   variant="outline"
-                  className="w-full h-full flex-col gap-1.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md py-2"
+                  className="w-full h-full flex-col gap-1.5 hover:bg-[#59CBE8]/5 text-zinc-600 bg-gradient-to-br from-white to-[#59CBE8]/10 border-[#59CBE8]/20 shadow-sm transition-all hover:shadow-md py-2 group"
                   onClick={() => setIsNewPolizaOpen(true)}
                 >
-                  <Plus className="h-5 w-5 text-zinc-500" />
+                  <Plus className="h-5 w-5 text-zinc-500 group-hover:text-[#59CBE8] transition-colors" />
                   <span className="text-xs font-semibold">Nueva Póliza</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="w-full h-full flex-col gap-1 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md px-1 py-1"
+                  className="w-full h-full flex-col gap-1 hover:bg-[#59CBE8]/5 text-zinc-600 bg-gradient-to-br from-white to-[#59CBE8]/10 border-[#59CBE8]/20 shadow-sm transition-all hover:shadow-md px-1 py-1 group"
                   onClick={() => setIsEditClienteOpen(true)}
                 >
-                  <UserCog className="h-5 w-5 text-zinc-500" />
+                  <UserCog className="h-5 w-5 text-zinc-500 group-hover:text-[#59CBE8] transition-colors" />
                   <span className="text-[10px] sm:text-[11px] font-semibold text-center leading-tight">Modificar<br />Cliente/Póliza</span>
                 </Button>
               </div>
