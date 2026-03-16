@@ -247,7 +247,7 @@ export function AlertsTable({ polizas, allPolizas, loading, onUpdated }: AlertsT
                         </p>
                     </div>
                 ) : (
-                    <div className="max-h-[350px] overflow-y-auto overflow-x-auto">
+                    <div className="max-h-[300px] overflow-y-auto overflow-x-auto">
                         <Table className="table-fixed w-full min-w-[450px]">
                             <TableHeader>
                                 <TableRow className="hover:bg-transparent">
