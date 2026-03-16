@@ -45,3 +45,15 @@ export interface Cotizacion {
   // Fecha de creación (manejada por Supabase / auto)
   created_at?: string;
 }
+
+export interface Siniestro {
+  id?: string;
+  nombre_cliente: string;
+  telefono_cliente?: string;
+  ramo: string;
+  compania: string;
+  resuelto: boolean;
+  fecha_resolucion?: string;
+  nota?: string;
+  created_at?: string;
+}

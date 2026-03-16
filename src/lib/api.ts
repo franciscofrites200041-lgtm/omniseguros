@@ -402,3 +402,85 @@ export async function deleteCotizacion(
     }
     return { success: true };
 }
+
+/* ──────────────────────────────────────────────
+   SINIESTROS API
+────────────────────────────────────────────── */
+import { Siniestro } from "./types";
+
+export async function fetchSiniestros(): Promise<Siniestro[]> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from("siniestros")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Error fetching siniestros:", error);
+        return [];
+    }
+    return (data || []).map((row: Record<string, unknown>) => ({
+        id: row.id as string,
+        nombre_cliente: row.nombre_cliente as string,
+        telefono_cliente: (row.telefono_cliente as string) || "",
+        ramo: row.ramo as string,
+        compania: row.compania as string,
+        resuelto: row.resuelto as boolean,
+        fecha_resolucion: (row.fecha_resolucion as string) || "",
+        nota: (row.nota as string) || "",
+        created_at: row.created_at as string,
+    }));
+}
+
+export async function createSiniestro(
+    siniestro: Omit<Siniestro, "id" | "created_at">
+): Promise<{ success: boolean; id?: string; message?: string }> {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, message: "No autenticado" };
+
+    const { data, error } = await supabase
+        .from("siniestros")
+        .insert({ ...siniestro, user_id: user.id })
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error creating siniestro:", error);
+        return { success: false, message: error.message };
+    }
+    return { success: true, id: data?.id };
+}
+
+export async function updateSiniestro(
+    id: string,
+    updates: Partial<Omit<Siniestro, "id" | "created_at">>
+): Promise<{ success: boolean; message?: string }> {
+    const supabase = createClient();
+    const { error } = await supabase
+        .from("siniestros")
+        .update(updates)
+        .eq("id", id);
+
+    if (error) {
+        console.error("Error updating siniestro:", error);
+        return { success: false, message: error.message };
+    }
+    return { success: true };
+}
+
+export async function deleteSiniestro(
+    id: string
+): Promise<{ success: boolean; message?: string }> {
+    const supabase = createClient();
+    const { error } = await supabase
+        .from("siniestros")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        console.error("Error deleting siniestro:", error);
+        return { success: false, message: error.message };
+    }
+    return { success: true };
+}
