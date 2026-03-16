@@ -58,16 +58,16 @@ export function KpiCards({ data, loading }: KpiCardsProps) {
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#59CBE8] rounded-full mix-blend-screen filter blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
             
-            <CardContent className="p-4 flex flex-col items-center justify-center h-full text-center relative z-10">
-                <div className="space-y-1">
-                    <p className="text-xs sm:text-sm font-bold tracking-tight text-white/90 uppercase letter-spacing-widest">
+            <CardContent className="p-2 flex flex-col items-center justify-center h-full text-center relative z-10">
+                <div className="space-y-0.5">
+                    <p className="text-[10px] sm:text-xs font-bold tracking-tight text-white/90 uppercase letter-spacing-widest">
                         {kpi.title}
                     </p>
-                    <p className="text-3xl sm:text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-white via-[#59CBE8] to-white drop-shadow-sm">
+                    <p className="text-2xl sm:text-3xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-white via-[#59CBE8] to-white drop-shadow-sm leading-none">
                         {kpi.value}
                     </p>
-                    <div className="mt-1 h-1 w-6 mx-auto rounded-full bg-linear-to-r from-[#59CBE8] to-indigo-500/50 opacity-80"></div>
-                    <p className="text-[11px] font-medium text-zinc-400 mt-1">{kpi.subtitle}</p>
+                    <div className="mt-0.5 h-0.5 w-5 mx-auto rounded-full bg-linear-to-r from-[#59CBE8] to-indigo-500/50 opacity-80"></div>
+                    <p className="text-[10px] font-medium text-zinc-400 mt-0.5">{kpi.subtitle}</p>
                 </div>
             </CardContent>
         </Card>
