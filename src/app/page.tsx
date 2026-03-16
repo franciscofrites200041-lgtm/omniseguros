@@ -68,10 +68,10 @@ export default function DashboardPage() {
         <main className="grid grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-3 lg:gap-8 lg:px-8 lg:py-8">
           {/* Left & Center: KPI + Buttons (Top) & Alerts (Bottom) */}
           <section className="lg:col-span-2 flex flex-col gap-6">
-            
+
             {/* Top Row: KPI card + 3x2 Nav Buttons */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              
+
               {/* KPI Card (1/3 width) */}
               <div className="md:col-span-1 flex flex-col h-full">
                 <KpiCards data={kpis} loading={loading} />
@@ -152,7 +152,7 @@ export default function DashboardPage() {
           </section>
 
           {/* Cotizador (Derecha) */}
-          <section className="lg:col-span-1 h-fit">
+          <section className="lg:col-span-1 h-full">
             <CotizadorCard />
           </section>
         </main>
