@@ -12,7 +12,7 @@ import { EditClienteModal } from "@/components/EditClienteModal";
 import { OnboardingGuard } from "@/components/OnboardingGuard";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ClipboardList, BarChart2, Plus, UserCog } from "lucide-react";
+import { ClipboardList, BarChart2, Plus, UserCog, FileText } from "lucide-react";
 
 import { Poliza, KpiData } from "@/lib/types";
 import { fetchPolizas } from "@/lib/api";
@@ -104,6 +104,13 @@ export default function DashboardPage() {
                   <UserCog className="h-8 w-8 text-zinc-500" />
                   <span className="text-sm font-semibold text-center leading-tight">Modificar<br />Cliente/Póliza</span>
                 </Button>
+
+                <Link href="/cotizador" className="col-span-2 w-full">
+                  <Button variant="outline" className="w-full flex-row py-4 gap-3 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
+                    <FileText className="h-6 w-6 text-zinc-500" />
+                    <span className="text-sm font-semibold">Cotizaciones</span>
+                  </Button>
+                </Link>
               </div>
             </div>
 
