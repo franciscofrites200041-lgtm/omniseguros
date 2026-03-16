@@ -52,19 +52,22 @@ export function KpiCards({ data, loading }: KpiCardsProps) {
 
     return (
         <Card
-            className={`w-full h-full relative overflow-hidden border-zinc-200 border-l-4 ${kpi.borderColor} transition-shadow hover:shadow-md`}
+            className="w-full h-full relative overflow-hidden shadow-lg border-0 rounded-3xl transition-all duration-500 hover:shadow-2xl hover:shadow-[#59CBE8]/10 group bg-linear-to-br from-slate-900 via-zinc-900 to-black"
         >
-            <CardContent className="p-6 flex flex-col justify-center h-full">
-                <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                        <p className="text-sm font-medium text-zinc-500">
-                            {kpi.title}
-                        </p>
-                        <p className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 break-words">
-                            {kpi.value}
-                        </p>
-                        <p className="text-xs text-zinc-400">{kpi.subtitle}</p>
-                    </div>
+            {/* Background Effects matching Inncome */}
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#59CBE8] rounded-full mix-blend-screen filter blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
+            
+            <CardContent className="p-6 flex flex-col items-center justify-center h-full text-center relative z-10">
+                <div className="space-y-2">
+                    <p className="text-base sm:text-lg font-bold tracking-tight text-white/90 uppercase letter-spacing-widest">
+                        {kpi.title}
+                    </p>
+                    <p className="text-5xl sm:text-6xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-white via-[#59CBE8] to-white drop-shadow-sm">
+                        {kpi.value}
+                    </p>
+                    <div className="mt-2 h-1 w-8 mx-auto rounded-full bg-linear-to-r from-[#59CBE8] to-indigo-500/50 opacity-80"></div>
+                    <p className="text-sm font-medium text-zinc-400 mt-2">{kpi.subtitle}</p>
                 </div>
             </CardContent>
         </Card>
