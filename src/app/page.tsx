@@ -152,7 +152,7 @@ export default function DashboardPage() {
           </section>
 
           {/* Cotizador (Derecha) */}
-          <section className="lg:col-span-1">
+          <section className="lg:col-span-1 h-fit">
             <CotizadorCard />
           </section>
         </main>
