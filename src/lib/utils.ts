@@ -69,9 +69,18 @@ export function parseCost(value: unknown): number {
 }
 
 /**
- * Calculate the next monthly occurrence of a given date
+ * Returns the actual parsed expiration date of the policy (not rolling).
+ * Used to build stable alertKeys that don't change day by day.
  */
 export function getNextExpiration(dateStr: string): Date {
+  return parseDate(dateStr);
+}
+
+/**
+ * Returns the next upcoming monthly occurrence of the expiration day.
+ * Used to calculate how many days are left until the next renewal.
+ */
+export function getNextMonthlyExpiration(dateStr: string): Date {
   const parsed = parseDate(dateStr);
   if (parsed.getTime() === 0) return new Date(0);
 
@@ -80,10 +89,10 @@ export function getNextExpiration(dateStr: string): Date {
 
   const targetDay = parsed.getDate();
 
-  // Intentar con el mes actual
+  // Try with the current month
   let nextTarget = new Date(now.getFullYear(), now.getMonth(), targetDay);
 
-  // Si ese día del mes actual ya pasó, el próximo es el mes que viene
+  // If that day already passed this month, use next month
   if (nextTarget.getTime() < now.getTime()) {
     nextTarget = new Date(now.getFullYear(), now.getMonth() + 1, targetDay);
   }
@@ -92,25 +101,49 @@ export function getNextExpiration(dateStr: string): Date {
 }
 
 /**
- * Calculate days remaining until the next monthly expiration date
+ * Returns days until next monthly renewal. Returns negative if the original
+ * policy expiration year is in the past (truly overdue).
  */
 export function daysUntil(dateStr: string): number {
-  const target = getNextExpiration(dateStr);
-  if (target.getTime() === 0) return -1;
+  const parsed = parseDate(dateStr);
+  if (parsed.getTime() === 0) return -999;
+
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-  const diff = target.getTime() - now.getTime();
+
+  // If the expiration year is in the past, policy is truly overdue
+  if (parsed.getFullYear() < now.getFullYear()) {
+    const diff = parsed.getTime() - now.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24)); // will be negative
+  }
+  if (parsed.getFullYear() === now.getFullYear() && parsed.getMonth() < now.getMonth()) {
+    const diff = parsed.getTime() - now.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24)); // will be negative
+  }
+  if (
+    parsed.getFullYear() === now.getFullYear() &&
+    parsed.getMonth() === now.getMonth() &&
+    parsed.getDate() < now.getDate()
+  ) {
+    const diff = parsed.getTime() - now.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24)); // will be negative
+  }
+
+  // Otherwise use next monthly occurrence
+  const next = getNextMonthlyExpiration(dateStr);
+  const diff = next.getTime() - now.getTime();
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
 /**
- * Get pólizas expiring within N days, sorted by nearest date
+ * Get pólizas expiring within N days (including overdue ones), sorted
  */
 export function getExpiringPolizas(polizas: Poliza[], days: number = 30): Poliza[] {
   return polizas
     .filter((p) => {
       const remaining = daysUntil(p.VENCIMIENTO);
-      return remaining >= 0 && remaining <= days;
+      // Include: overdue (negative) OR expiring within 'days' days
+      return remaining < 0 || remaining <= days;
     })
     .sort((a, b) => daysUntil(a.VENCIMIENTO) - daysUntil(b.VENCIMIENTO));
 }

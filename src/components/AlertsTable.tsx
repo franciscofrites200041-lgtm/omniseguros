@@ -41,7 +41,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Poliza } from "@/lib/types";
-import { formatCurrency, daysUntil, getNextExpiration } from "@/lib/utils";
+import { formatCurrency, daysUntil, getNextExpiration, parseDate } from "@/lib/utils";
 import { sendNotification, updatePolizaFull } from "@/lib/api";
 
 interface AlertsTableProps {
@@ -56,7 +56,7 @@ type ViewMode = "vencimientos" | "impagas";
 const viewLabels: Record<ViewMode, { title: string; badge: string }> = {
     vencimientos: {
         title: "Alertas de Vencimiento",
-        badge: "Próximos 30 días",
+        badge: "Atrasadas + próximos 30 días",
     },
     impagas: {
         title: "Pólizas Impagas",
@@ -107,8 +107,9 @@ export function AlertsTable({ polizas, allPolizas, loading, onUpdated }: AlertsT
     const impagas = allPolizas.filter((p) => p.ESTADO === "IMPAGA");
     const displayData = (viewMode === "vencimientos" ? polizas : impagas).filter((p) => {
         if (!mounted) return true;
-        const nextTarget = getNextExpiration(p.VENCIMIENTO);
-        const alertKey = `${p.id || p.CODIGO}_${nextTarget.getMonth()}_${nextTarget.getFullYear()}`;
+        // Use the actual parsed expiration date for a stable key
+        const expirationDate = parseDate(p.VENCIMIENTO);
+        const alertKey = `${p.id || p.CODIGO}_${expirationDate.getMonth()}_${expirationDate.getFullYear()}`;
         return !hiddenIds.has(alertKey);
     });
     const labels = viewLabels[viewMode];
@@ -127,8 +128,9 @@ export function AlertsTable({ polizas, allPolizas, loading, onUpdated }: AlertsT
 
     const handleMarkNotified = (poliza: Poliza) => {
         const id = poliza.id || poliza.CODIGO;
-        const nextTarget = getNextExpiration(poliza.VENCIMIENTO);
-        const alertKey = `${id}_${nextTarget.getMonth()}_${nextTarget.getFullYear()}`;
+        // Stable key: uses the actual parsed expiration date, not a rolling monthly one
+        const expirationDate = parseDate(poliza.VENCIMIENTO);
+        const alertKey = `${id}_${expirationDate.getMonth()}_${expirationDate.getFullYear()}`;
 
         setNotifiedIds((prev) => new Set([...prev, id]));
         // Wait for animation before removing from list
@@ -175,12 +177,14 @@ export function AlertsTable({ polizas, allPolizas, loading, onUpdated }: AlertsT
     };
 
     const getDaysLabel = (days: number) => {
+        if (days < 0) return `Venc. hace ${Math.abs(days)} días`;
         if (days === 0) return "Hoy";
         if (days === 1) return "Mañana";
         return `${days} días`;
     };
 
     const getDaysColor = (days: number) => {
+        if (days < 0) return "text-red-700 bg-red-100";
         if (days <= 3) return "text-red-600 bg-red-50";
         if (days <= 10) return "text-amber-600 bg-amber-50";
         return "text-blue-600 bg-blue-50";
@@ -285,7 +289,7 @@ export function AlertsTable({ polizas, allPolizas, loading, onUpdated }: AlertsT
                                                         <div
                                                             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${getDaysColor(days)}`}
                                                         >
-                                                            {days <= 3 && (
+                                                            {(days < 0 || days <= 3) && (
                                                                 <AlertCircle className="h-3.5 w-3.5" />
                                                             )}
                                                             {getDaysLabel(days)}
