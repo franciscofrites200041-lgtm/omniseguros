@@ -192,8 +192,8 @@ export function NuevaCotizacionModal({ open, onClose, onCreated }: NuevaCotizaci
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="PENDIENTE">Pendiente</SelectItem>
-                                    <SelectItem value="VENDIDO">✅ Vendido</SelectItem>
-                                    <SelectItem value="NO_VENDIDO">❌ No Vendido</SelectItem>
+                                    <SelectItem value="VENDIDO">Vendido</SelectItem>
+                                    <SelectItem value="NO_VENDIDO">No Vendido</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
