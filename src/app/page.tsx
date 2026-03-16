@@ -12,7 +12,7 @@ import { EditClienteModal } from "@/components/EditClienteModal";
 import { OnboardingGuard } from "@/components/OnboardingGuard";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ClipboardList, BarChart2, Plus, UserCog, FileText } from "lucide-react";
+import { ClipboardList, BarChart2, Plus, UserCog, FileText, ShieldAlert } from "lucide-react";
 
 import { Poliza, KpiData } from "@/lib/types";
 import { fetchPolizas } from "@/lib/api";
@@ -87,11 +87,18 @@ export default function DashboardPage() {
                   </Button>
                 </MetricsModal>
 
-                {/* Cotizaciones — ocupa toda la fila del medio */}
-                <Link href="/cotizaciones" className="col-span-2 w-full flex-grow">
-                  <Button variant="outline" className="w-full h-full flex-col py-6 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
+                {/* Fila 2: Cotizaciones + Siniestros */}
+                <Link href="/cotizaciones" className="w-full h-full">
+                  <Button variant="outline" className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
                     <FileText className="h-8 w-8 text-zinc-500" />
                     <span className="text-sm font-semibold">Cotizaciones</span>
+                  </Button>
+                </Link>
+
+                <Link href="/siniestros" className="w-full h-full">
+                  <Button variant="outline" className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
+                    <ShieldAlert className="h-8 w-8 text-zinc-500" />
+                    <span className="text-sm font-semibold">Siniestros</span>
                   </Button>
                 </Link>
 
