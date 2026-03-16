@@ -192,7 +192,7 @@ export function AlertsTable({ polizas, allPolizas, loading, onUpdated }: AlertsT
 
     return (
         <Card className="border-zinc-200">
-            <CardHeader className="pb-4">
+            <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Clock className="h-5 w-5 text-amber-500" />
@@ -247,14 +247,14 @@ export function AlertsTable({ polizas, allPolizas, loading, onUpdated }: AlertsT
                         </p>
                     </div>
                 ) : (
-                    <div className="max-h-[300px] overflow-y-auto overflow-x-auto">
+                    <div className="max-h-[285px] overflow-y-auto overflow-x-auto">
                         <Table className="table-fixed w-full min-w-[450px]">
                             <TableHeader>
                                 <TableRow className="hover:bg-transparent">
-                                    <TableHead className="pl-4 text-[10px] font-semibold uppercase tracking-wider text-zinc-500 w-[55%]">
+                                    <TableHead className=" h-8 pl-4 text-[10px] font-semibold uppercase tracking-wider text-zinc-500 w-[55%]">
                                         Detalle de Póliza
                                     </TableHead>
-                                    <TableHead className="pr-4 text-right text-[10px] font-semibold uppercase tracking-wider text-zinc-500 w-[45%]">
+                                    <TableHead className=" h-8 pr-4 text-right text-[10px] font-semibold uppercase tracking-wider text-zinc-500 w-[45%]">
                                         Vencimiento y Acción
                                     </TableHead>
                                 </TableRow>
