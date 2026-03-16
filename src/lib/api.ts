@@ -321,3 +321,84 @@ export async function createPoliza(
         return { success: false, message: "Error al crear la póliza en DB" };
     }
 }
+
+/* ──────────────────────────────────────────────
+   COTIZACIONES API
+────────────────────────────────────────────── */
+import { Cotizacion } from "./types";
+
+export async function fetchCotizaciones(): Promise<Cotizacion[]> {
+    const supabase = createClient();
+    const { data, error } = await supabase
+        .from("cotizaciones")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Error fetching cotizaciones:", error);
+        return [];
+    }
+    return (data || []).map((row: Record<string, unknown>) => ({
+        id: row.id as string,
+        nombre_cliente: row.nombre_cliente as string,
+        telefono_cliente: (row.telefono_cliente as string) || "",
+        ramo: row.ramo as string,
+        companias_cotizadas: row.companias_cotizadas as string,
+        estado: row.estado as Cotizacion["estado"],
+        observacion: (row.observacion as string) || "",
+        created_at: row.created_at as string,
+    }));
+}
+
+export async function createCotizacion(
+    cotizacion: Omit<Cotizacion, "id" | "created_at">
+): Promise<{ success: boolean; id?: string; message?: string }> {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, message: "No autenticado" };
+
+    const { data, error } = await supabase
+        .from("cotizaciones")
+        .insert({ ...cotizacion, user_id: user.id })
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error creating cotizacion:", error);
+        return { success: false, message: error.message };
+    }
+    return { success: true, id: data?.id };
+}
+
+export async function updateCotizacion(
+    id: string,
+    updates: Partial<Omit<Cotizacion, "id" | "created_at">>
+): Promise<{ success: boolean; message?: string }> {
+    const supabase = createClient();
+    const { error } = await supabase
+        .from("cotizaciones")
+        .update(updates)
+        .eq("id", id);
+
+    if (error) {
+        console.error("Error updating cotizacion:", error);
+        return { success: false, message: error.message };
+    }
+    return { success: true };
+}
+
+export async function deleteCotizacion(
+    id: string
+): Promise<{ success: boolean; message?: string }> {
+    const supabase = createClient();
+    const { error } = await supabase
+        .from("cotizaciones")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        console.error("Error deleting cotizacion:", error);
+        return { success: false, message: error.message };
+    }
+    return { success: true };
+}

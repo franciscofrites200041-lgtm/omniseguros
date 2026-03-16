@@ -88,7 +88,7 @@ export default function DashboardPage() {
                 </MetricsModal>
 
                 {/* Cotizaciones — ocupa toda la fila del medio */}
-                <Link href="/cotizador" className="col-span-2 w-full flex-grow">
+                <Link href="/cotizaciones" className="col-span-2 w-full flex-grow">
                   <Button variant="outline" className="w-full h-full flex-col py-6 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
                     <FileText className="h-8 w-8 text-zinc-500" />
                     <span className="text-sm font-semibold">Cotizaciones</span>
