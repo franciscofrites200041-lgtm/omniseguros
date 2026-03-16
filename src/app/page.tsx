@@ -87,6 +87,14 @@ export default function DashboardPage() {
                   </Button>
                 </MetricsModal>
 
+                {/* Cotizaciones — ocupa toda la fila del medio */}
+                <Link href="/cotizador" className="col-span-2 w-full flex-grow">
+                  <Button variant="outline" className="w-full h-full flex-col py-6 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
+                    <FileText className="h-8 w-8 text-zinc-500" />
+                    <span className="text-sm font-semibold">Cotizaciones</span>
+                  </Button>
+                </Link>
+
                 <Button
                   variant="outline"
                   className="w-full flex-col h-full py-4 gap-2.5 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md"
@@ -104,13 +112,6 @@ export default function DashboardPage() {
                   <UserCog className="h-8 w-8 text-zinc-500" />
                   <span className="text-sm font-semibold text-center leading-tight">Modificar<br />Cliente/Póliza</span>
                 </Button>
-
-                <Link href="/cotizador" className="col-span-2 w-full">
-                  <Button variant="outline" className="w-full flex-row py-4 gap-3 hover:bg-zinc-100 text-zinc-600 bg-white shadow-sm transition-shadow hover:shadow-md">
-                    <FileText className="h-6 w-6 text-zinc-500" />
-                    <span className="text-sm font-semibold">Cotizaciones</span>
-                  </Button>
-                </Link>
               </div>
             </div>
 
