@@ -90,7 +90,7 @@ export function AiChatWidget() {
                 onClick={() => setIsOpen(!isOpen)}
                 className={`fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-all duration-300 hover:scale-105 ${isOpen
                     ? "rotate-0 bg-zinc-800 text-white"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
+                    : "bg-[#59CBE8] text-white hover:bg-[#4ABBD7]"
                     }`}
             >
                 {isOpen ? (
@@ -108,7 +108,7 @@ export function AiChatWidget() {
                     }`}
             >
                 {/* Chat Header */}
-                <div className="border-b border-zinc-100 bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-4">
+                <div className="border-b border-zinc-100 bg-gradient-to-r from-[#59CBE8] to-[#4ABBD7] px-5 py-4">
                     <div className="flex items-center gap-3">
                         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
                             <Bot className="h-5 w-5 text-white" />
@@ -133,7 +133,7 @@ export function AiChatWidget() {
                             >
                                 <div
                                     className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${msg.role === "user"
-                                        ? "bg-blue-100 text-blue-600"
+                                        ? "bg-[#59CBE8]/10 text-[#59CBE8]"
                                         : "bg-zinc-100 text-zinc-500"
                                         }`}
                                 >
@@ -145,7 +145,7 @@ export function AiChatWidget() {
                                 </div>
                                 <div
                                     className={`max-w-[260px] rounded-2xl px-3.5 py-2.5 ${msg.role === "user"
-                                        ? "bg-blue-600 text-white"
+                                        ? "bg-[#59CBE8] text-white"
                                         : "bg-zinc-100 text-zinc-800"
                                         }`}
                                 >
@@ -195,13 +195,13 @@ export function AiChatWidget() {
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Escribí tu consulta..."
                         disabled={isLoading}
-                        className="border-zinc-200 bg-white text-sm focus-visible:ring-blue-500"
+                        className="border-zinc-200 bg-white text-sm focus-visible:ring-[#59CBE8]"
                     />
                     <Button
                         type="submit"
                         size="icon"
                         disabled={isLoading || !input.trim()}
-                        className="h-9 w-9 shrink-0 bg-blue-600 hover:bg-blue-700"
+                        className="h-9 w-9 shrink-0 bg-[#59CBE8] hover:bg-[#4ABBD7]"
                     >
                         {isLoading ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
