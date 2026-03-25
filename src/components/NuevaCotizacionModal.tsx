@@ -107,7 +107,7 @@ export function NuevaCotizacionModal({ open, onClose, onCreated }: NuevaCotizaci
             <DialogContent className="max-h-[90vh] overflow-y-auto w-[95vw] sm:max-w-[560px] p-4 sm:p-6">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-zinc-900">
-                        <Plus className="h-5 w-5 text-blue-600" />
+                        <Plus className="h-5 w-5 text-[#59CBE8]" />
                         Nueva Cotización
                     </DialogTitle>
                 </DialogHeader>
@@ -225,7 +225,7 @@ export function NuevaCotizacionModal({ open, onClose, onCreated }: NuevaCotizaci
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="gap-2 bg-blue-600 hover:bg-blue-700"
+                            className="gap-2 bg-gradient-to-br from-[#59CBE8] to-[#4ABBD7] text-white hover:opacity-90"
                         >
                             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                             Guardar Cotización

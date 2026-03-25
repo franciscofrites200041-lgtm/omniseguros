@@ -93,7 +93,7 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
     if (isLoading) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-zinc-50/50">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#59CBE8]" />
             </div>
         );
     }

@@ -149,7 +149,7 @@ export function EditClienteModal({
             <DialogContent className="max-h-[90vh] overflow-y-auto w-[95vw] sm:max-w-[640px] p-4 sm:p-6">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-zinc-900">
-                        <UserCog className="h-5 w-5 text-blue-600" />
+                        <UserCog className="h-5 w-5 text-[#59CBE8]" />
                         Modificar Cliente / Póliza
                     </DialogTitle>
                 </DialogHeader>
@@ -420,7 +420,7 @@ export function EditClienteModal({
                                                 variant="outline"
                                                 size="sm"
                                                 onClick={() => handleSelect(otherP)}
-                                                className="text-xs h-7 text-blue-600 border-blue-200 hover:bg-blue-50"
+                                                className="text-xs h-7 text-[#59CBE8] border-[#59CBE8]/30 hover:bg-[#59CBE8]/10"
                                             >
                                                 Modificar
                                             </Button>
@@ -454,7 +454,7 @@ export function EditClienteModal({
                                 disabled={isSubmitting || submitResult?.type === "success"}
                                 className={cn(
                                     "gap-2",
-                                    submitResult?.type === "success" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-blue-600 hover:bg-blue-700"
+                                    submitResult?.type === "success" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-gradient-to-br from-[#59CBE8] to-[#4ABBD7] text-white hover:opacity-90"
                                 )}
                             >
                                 {isSubmitting ? (

@@ -330,7 +330,7 @@ export function PolizasTable({
                                                         size="sm"
                                                         variant="ghost"
                                                         onClick={() => setDetailPoliza(poliza)}
-                                                        className="gap-1.5 text-zinc-500 hover:text-blue-600"
+                                                        className="gap-1.5 text-zinc-500 hover:text-[#59CBE8]"
                                                     >
                                                         <Eye className="h-3.5 w-3.5" />
                                                         Detalle

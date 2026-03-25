@@ -110,7 +110,7 @@ export function SettingsModal({ open, onClose, requireOnboarding, onSaved }: Set
             >
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        {requireOnboarding ? <User className="h-5 w-5 text-blue-600" /> : <Settings className="h-5 w-5 text-blue-600" />}
+                        {requireOnboarding ? <User className="h-5 w-5 text-[#59CBE8]" /> : <Settings className="h-5 w-5 text-[#59CBE8]" />}
                         {requireOnboarding ? "¡Bienvenido a OmniSeguros!" : "Configuración de Perfil"}
                     </DialogTitle>
                     <DialogDescription>
@@ -165,7 +165,7 @@ export function SettingsModal({ open, onClose, requireOnboarding, onSaved }: Set
                             <Button
                                 type="submit"
                                 disabled={isSubmitting || !fullName.trim() || (submitResult?.type === "success" && !requireOnboarding)}
-                                className={cn(submitResult?.type === "success" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-blue-600 hover:bg-blue-700", requireOnboarding && "w-full sm:w-auto")}
+                                className={cn(submitResult?.type === "success" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-gradient-to-br from-[#59CBE8] to-[#4ABBD7] text-white hover:opacity-90", requireOnboarding && "w-full sm:w-auto")}
                             >
                                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                 {requireOnboarding ? "Guardar y Continuar" : "Guardar Cambios"}

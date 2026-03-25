@@ -45,9 +45,9 @@ export function KpiCards({ data, loading }: KpiCardsProps) {
         value: data.totalVigentes.toString(),
         subtitle: "Activas actualmente",
         icon: Shield,
-        accentColor: "text-blue-600",
-        bgColor: "bg-blue-50",
-        borderColor: "border-l-blue-500",
+        accentColor: "text-[#59CBE8]",
+        bgColor: "bg-[#59CBE8]/10",
+        borderColor: "border-l-[#59CBE8]",
     };
 
     return (

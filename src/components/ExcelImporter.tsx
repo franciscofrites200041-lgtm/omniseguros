@@ -219,13 +219,13 @@ export function ExcelImporter() {
                 </div>
 
                 <div className="hidden sm:flex items-center gap-3 text-sm font-medium">
-                    <div className={cn("flex items-center gap-2", step === "upload" ? "text-blue-600" : "text-zinc-400")}>
-                        <div className={cn("flex h-6 w-6 items-center justify-center rounded-full text-xs text-white", step === "upload" ? "bg-blue-600" : "bg-zinc-300")}>1</div>
+                    <div className={cn("flex items-center gap-2", step === "upload" ? "text-[#59CBE8]" : "text-zinc-400")}>
+                        <div className={cn("flex h-6 w-6 items-center justify-center rounded-full text-xs text-white", step === "upload" ? "bg-[#59CBE8]" : "bg-zinc-300")}>1</div>
                         Subir Archivo
                     </div>
                     <div className="w-8 h-px bg-zinc-200" />
-                    <div className={cn("flex items-center gap-2", step === "preview" ? "text-blue-600" : "text-zinc-400")}>
-                        <div className={cn("flex h-6 w-6 items-center justify-center rounded-full text-xs text-white", step === "preview" ? "bg-blue-600" : "bg-zinc-300")}>2</div>
+                    <div className={cn("flex items-center gap-2", step === "preview" ? "text-[#59CBE8]" : "text-zinc-400")}>
+                        <div className={cn("flex h-6 w-6 items-center justify-center rounded-full text-xs text-white", step === "preview" ? "bg-[#59CBE8]" : "bg-zinc-300")}>2</div>
                         Validar y Guardar
                     </div>
                 </div>
@@ -237,7 +237,7 @@ export function ExcelImporter() {
                     {...getRootProps()}
                     className={cn(
                         "mt-6 border-2 border-dashed rounded-xl p-16 transition-all duration-200 ease-in-out cursor-pointer flex flex-col items-center justify-center text-center",
-                        isDragActive ? "border-blue-500 bg-blue-50/50" : "border-zinc-300 hover:border-zinc-400 hover:bg-zinc-50",
+                        isDragActive ? "border-[#59CBE8] bg-[#59CBE8]/5" : "border-zinc-300 hover:border-zinc-400 hover:bg-zinc-50",
                         isDragReject && "border-red-500 bg-red-50",
                         isParsing && "opacity-50 pointer-events-none"
                     )}
@@ -246,7 +246,7 @@ export function ExcelImporter() {
 
                     <div className={cn(
                         "h-20 w-20 rounded-full flex items-center justify-center mb-6 transition-colors duration-200",
-                        isDragActive ? "bg-blue-100 text-blue-600" : "bg-zinc-100 text-zinc-500",
+                        isDragActive ? "bg-[#59CBE8]/10 text-[#59CBE8]" : "bg-zinc-100 text-zinc-500",
                         isDragReject && "bg-red-100 text-red-600"
                     )}>
                         {isDragReject ? (
@@ -348,8 +348,8 @@ export function ExcelImporter() {
 
                     <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
                         <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                                <Server className="h-5 w-5 text-blue-600" />
+                            <div className="h-10 w-10 rounded-full bg-[#59CBE8]/10 flex items-center justify-center shrink-0">
+                                <Server className="h-5 w-5 text-[#59CBE8]" />
                             </div>
                             <div>
                                 <h4 className="font-semibold text-zinc-900">Guardar Clientes</h4>
@@ -361,7 +361,7 @@ export function ExcelImporter() {
                         <Button
                             onClick={handleImportToSupabase}
                             disabled={isUploading}
-                            className="w-full sm:w-auto gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm shrink-0"
+                            className="w-full sm:w-auto gap-2 bg-gradient-to-br from-[#59CBE8] to-[#4ABBD7] text-white hover:opacity-90 shadow-sm shrink-0"
                         >
                             {isUploading ? (
                                 <><Loader2 className="w-4 h-4 animate-spin" /> Cargando...</>

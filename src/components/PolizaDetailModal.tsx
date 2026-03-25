@@ -149,7 +149,7 @@ export function PolizaDetailModal({
                                                     ? "border-red-200 bg-red-50 text-red-600"
                                                     : days <= 30
                                                         ? "border-amber-200 bg-amber-50 text-amber-600"
-                                                        : "border-blue-200 bg-blue-50 text-blue-600"
+                                                        : "border-[#59CBE8]/30 bg-[#59CBE8]/5 text-[#59CBE8]"
                                                 }`}
                                         >
                                             {days === 0 ? "Hoy" : `${days}d`}

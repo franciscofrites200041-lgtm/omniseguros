@@ -86,7 +86,7 @@ export function CompanyChart({ data, loading }: CompanyChartProps) {
         <Card className="border-zinc-200">
             <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                    <Building2 className="h-5 w-5 text-blue-500" />
+                    <Building2 className="h-5 w-5 text-[#59CBE8]" />
                     <CardTitle className="text-base font-semibold text-zinc-900">
                         Distribución por Compañía
                     </CardTitle>

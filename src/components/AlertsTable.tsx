@@ -396,7 +396,7 @@ export function AlertsTable({ polizas, allPolizas, loading, onUpdated }: AlertsT
                         <Button
                             disabled={isSubmitting}
                             onClick={handleSaveAndNotify}
-                            className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+                            className="bg-gradient-to-br from-[#59CBE8] to-[#4ABBD7] hover:opacity-90 w-full sm:w-auto"
                         >
                             {isSubmitting ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
                             Actualizar y Ocultar
