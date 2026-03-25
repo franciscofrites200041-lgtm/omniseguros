@@ -36,8 +36,8 @@ export default function PolizasPage() {
                 <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 space-y-6">
                     <div>
                         <Link href="/">
-                            <Button variant="outline" className="gap-2 bg-white hover:bg-zinc-100 text-zinc-600">
-                                <ArrowLeft className="h-4 w-4" />
+                            <Button variant="outline" className="gap-2 bg-gradient-to-br from-white to-[#59CBE8]/15 border-[#59CBE8]/30 hover:bg-[#59CBE8]/10 text-zinc-700">
+                                <ArrowLeft className="h-4 w-4 text-[#59CBE8]" />
                                 Volver al Dashboard
                             </Button>
                         </Link>

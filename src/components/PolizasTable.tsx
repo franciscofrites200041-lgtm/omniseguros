@@ -110,10 +110,10 @@ export function PolizasTable({
 
     if (loading) {
         return (
-            <Card className="border-zinc-200">
+            <Card className="border-[#59CBE8]/30 bg-white/50 backdrop-blur-sm shadow-sm">
                 <CardContent className="p-8">
                     <div className="flex items-center justify-center gap-3 text-zinc-400">
-                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <Loader2 className="h-5 w-5 animate-spin text-[#59CBE8]" />
                         <span className="text-sm">Cargando pólizas...</span>
                     </div>
                 </CardContent>
@@ -123,21 +123,23 @@ export function PolizasTable({
 
     return (
         <>
-            <Card className="border-zinc-200">
+            <Card className="border-[#59CBE8]/30 bg-white/50 backdrop-blur-sm shadow-sm">
                 <CardHeader className="pb-4">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-center gap-2">
-                            <ClipboardList className="h-5 w-5 text-blue-500" />
+                            <div className="rounded-full bg-[#59CBE8]/10 p-1.5">
+                                <ClipboardList className="h-4 w-4 text-[#59CBE8]" />
+                            </div>
                             <CardTitle className="text-base font-semibold text-zinc-900">
                                 Todas las Pólizas
                             </CardTitle>
-                            <Badge variant="secondary" className="ml-1 text-xs">
+                            <Badge variant="outline" className="ml-1 text-[10px] font-bold border-[#59CBE8]/30 bg-[#59CBE8]/5 text-[#59CBE8] uppercase tracking-wider">
                                 {filtered.length} de {polizas.length}
                             </Badge>
                         </div>
                         <Button
                             onClick={() => setShowNewModal(true)}
-                            className="w-full sm:w-auto gap-2 bg-blue-600 hover:bg-blue-700"
+                            className="w-full sm:w-auto gap-2 bg-gradient-to-br from-[#59CBE8] to-[#4ABBD7] text-white hover:opacity-90 shadow-sm"
                         >
                             <Plus className="h-4 w-4" />
                             Nuevo Cliente

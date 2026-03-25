@@ -14,15 +14,15 @@ export default function ImportarPage() {
                 <main className="px-8 py-8 space-y-8 max-w-[1440px] mx-auto">
                     <div>
                         <Link href="/">
-                            <Button variant="outline" className="gap-2 bg-white hover:bg-zinc-100 text-zinc-600">
-                                <ArrowLeft className="h-4 w-4" />
+                            <Button variant="outline" className="gap-2 bg-gradient-to-br from-white to-[#59CBE8]/15 border-[#59CBE8]/30 hover:bg-[#59CBE8]/10 text-zinc-700">
+                                <ArrowLeft className="h-4 w-4 text-[#59CBE8]" />
                                 Volver al Dashboard
                             </Button>
                         </Link>
                     </div>
 
                     {/* Excel Importer Component */}
-                    <div className="bg-white border border-zinc-200 rounded-2xl p-8 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm border border-[#59CBE8]/30 rounded-2xl p-8 shadow-sm">
                         <ExcelImporter />
                     </div>
                 </main>

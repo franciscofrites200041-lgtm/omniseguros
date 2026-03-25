@@ -108,8 +108,8 @@ export default function SiniestrosPage() {
                     {/* Back button */}
                     <div>
                         <Link href="/">
-                            <Button variant="outline" className="gap-2 bg-white hover:bg-zinc-100 text-zinc-600">
-                                <ArrowLeft className="h-4 w-4" />
+                            <Button variant="outline" className="gap-2 bg-gradient-to-br from-white to-[#59CBE8]/15 border-[#59CBE8]/30 hover:bg-[#59CBE8]/10 text-zinc-700">
+                                <ArrowLeft className="h-4 w-4 text-[#59CBE8]" />
                                 Volver al Dashboard
                             </Button>
                         </Link>
@@ -117,62 +117,62 @@ export default function SiniestrosPage() {
 
                     {/* KPI Cards */}
                     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                        <Card className="border-zinc-200 bg-white">
+                        <Card className="border-[#59CBE8]/30 bg-white/50 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300">
                             <CardContent className="p-5">
                                 <div className="flex items-start justify-between">
                                     <div>
                                         <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Total Siniestros</p>
                                         <p className="mt-1 text-3xl font-bold text-zinc-900">{kpis.total}</p>
                                     </div>
-                                    <div className="rounded-xl bg-orange-50 p-2.5">
-                                        <ShieldAlert className="h-5 w-5 text-orange-500" />
+                                    <div className="rounded-full bg-[#59CBE8]/10 p-2.5">
+                                        <ShieldAlert className="h-5 w-5 text-[#59CBE8]" />
                                     </div>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        <Card className="border-zinc-200 bg-white">
+                        <Card className="border-[#59CBE8]/30 bg-white/50 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300">
                             <CardContent className="p-5">
                                 <div className="flex items-start justify-between">
                                     <div>
                                         <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Resueltos</p>
                                         <p className="mt-1 text-3xl font-bold text-emerald-600">{kpis.resueltos}</p>
                                     </div>
-                                    <div className="rounded-xl bg-emerald-50 p-2.5">
+                                    <div className="rounded-full bg-emerald-50 p-2.5">
                                         <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                                     </div>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        <Card className="border-zinc-200 bg-white">
+                        <Card className="border-[#59CBE8]/30 bg-white/50 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300">
                             <CardContent className="p-5">
                                 <div className="flex items-start justify-between">
                                     <div>
                                         <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Pendientes</p>
                                         <p className="mt-1 text-3xl font-bold text-amber-600">{kpis.pendientes}</p>
                                     </div>
-                                    <div className="rounded-xl bg-amber-50 p-2.5">
+                                    <div className="rounded-full bg-amber-50 p-2.5">
                                         <Clock className="h-5 w-5 text-amber-500" />
                                     </div>
                                 </div>
                             </CardContent>
                         </Card>
 
-                        <Card className="border-zinc-200 bg-white">
+                        <Card className="border-[#59CBE8]/30 bg-white/50 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300">
                             <CardContent className="p-5">
                                 <div className="flex items-start justify-between">
                                     <div>
                                         <p className="text-xs font-medium uppercase tracking-wider text-zinc-400">Tasa de Resolución</p>
-                                        <p className="mt-1 text-3xl font-bold text-orange-600">{kpis.tasaResolucion}%</p>
+                                        <p className="mt-1 text-3xl font-bold text-[#59CBE8]">{kpis.tasaResolucion}%</p>
                                     </div>
-                                    <div className="rounded-xl bg-orange-50 p-2.5">
-                                        <ShieldAlert className="h-5 w-5 text-orange-500" />
+                                    <div className="rounded-full bg-[#59CBE8]/10 p-2.5">
+                                        <ShieldAlert className="h-5 w-5 text-[#59CBE8]" />
                                     </div>
                                 </div>
                                 <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-zinc-100">
                                     <div
-                                        className="h-full rounded-full bg-orange-500 transition-all duration-700"
+                                        className="h-full rounded-full bg-[#59CBE8] transition-all duration-700"
                                         style={{ width: `${kpis.tasaResolucion}%` }}
                                     />
                                 </div>
@@ -181,21 +181,23 @@ export default function SiniestrosPage() {
                     </div>
 
                     {/* Table Card */}
-                    <Card className="border-zinc-200">
+                    <Card className="border-[#59CBE8]/30 bg-white/50 backdrop-blur-sm shadow-sm">
                         <CardHeader className="pb-4">
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div className="flex items-center gap-2">
-                                    <ShieldAlert className="h-5 w-5 text-orange-500" />
+                                    <div className="rounded-full bg-[#59CBE8]/10 p-1.5">
+                                        <ShieldAlert className="h-4 w-4 text-[#59CBE8]" />
+                                    </div>
                                     <CardTitle className="text-base font-semibold text-zinc-900">
                                         Registro de Siniestros
                                     </CardTitle>
-                                    <Badge variant="secondary" className="ml-1 text-xs">
+                                    <Badge variant="outline" className="ml-1 text-[10px] font-bold border-[#59CBE8]/30 bg-[#59CBE8]/5 text-[#59CBE8] uppercase tracking-wider">
                                         {filtered.length} de {siniestros.length}
                                     </Badge>
                                 </div>
                                 <Button
                                     onClick={() => setShowModal(true)}
-                                    className="w-full sm:w-auto gap-2 bg-orange-600 hover:bg-orange-700"
+                                    className="w-full sm:w-auto gap-2 bg-gradient-to-br from-[#59CBE8] to-[#4ABBD7] text-white hover:opacity-90 shadow-sm"
                                 >
                                     <Plus className="h-4 w-4" />
                                     Cargar Siniestro
@@ -262,7 +264,7 @@ export default function SiniestrosPage() {
                                                 const isDeleting = deletingId === sin.id;
 
                                                 return (
-                                                    <TableRow key={sin.id} className="group transition-colors hover:bg-zinc-50/50">
+                                                    <TableRow key={sin.id} className="group transition-colors hover:bg-[#59CBE8]/5">
                                                         {/* Estado toggle */}
                                                         <TableCell className="pl-6">
                                                             <DropdownMenu>
